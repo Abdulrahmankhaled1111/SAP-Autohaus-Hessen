@@ -1,0 +1,63 @@
+*----------------------------------------------------------------------*
+* Tabelle: ZAH_FAHRZEUG_HIST
+* Status-Historie für Fahrzeuge (Audit Trail)
+*----------------------------------------------------------------------*
+TABNAME: ZAH_FAHRZEUG_HIST
+TABCLASS: TRANSP
+DDTEXT: Fahrzeug-Statushistorie
+
+FELDER:
+  FAHRZEUG_ID   CHAR 10  KEY  Fahrzeug-ID             → ZAH_FAHRZEUG
+  SEQNR         NUMC  6  KEY  Laufende Nummer
+  STATUS_ALT    CHAR 10      Alter Status
+  STATUS_NEU    CHAR 10      Neuer Status
+  AENDERDATUM   DATS         Änderungsdatum
+  AENDERZEIT    TIMS         Änderungszeit
+  AENDERUSER    CHAR 12      Geändert von
+  BEMERKUNG     CHAR 100     Bemerkung
+
+*----------------------------------------------------------------------*
+* Tabelle: ZAH_NUMMERNKREIS
+* Automatische Nummernvergabe
+*----------------------------------------------------------------------*
+TABNAME: ZAH_NUMMERNKREIS
+TABCLASS: TRANSP
+DDTEXT: Nummernkreise Autohaus HESSEN
+
+FELDER:
+  OBJEKT_TYP    CHAR 10  KEY  Objekttyp (KUNDE/FAHRZEUG/AUFTRAG/…)
+  PREFIX        CHAR  2      Präfix (K/F/V/R/…)
+  AKTUELLE_NR   NUMC 10      Aktuelle Nummer
+  BESCHREIBUNG  CHAR 40      Beschreibung
+
+BEISPIELDATEN:
+  KUNDE      K   0000000001  Kundennummern
+  FAHRZEUG   F   0000000001  Fahrzeug-IDs
+  EINKAUF    E   0000000001  Einkaufsaufträge
+  ANGEBOT    A   0000000001  Angebote
+  AUFTRAG    V   0000000001  Verkaufsaufträge
+  RECHNUNG   R   0000000001  Rechnungen
+  ZAHLUNG    Z   0000000001  Zahlungen
+  LIEFERANT  L   0000000001  Lieferanten
+
+*----------------------------------------------------------------------*
+* Tabelle: ZAH_KONFIG
+* Systemkonfiguration
+*----------------------------------------------------------------------*
+TABNAME: ZAH_KONFIG
+TABCLASS: TRANSP
+DDTEXT: Konfiguration Autohaus HESSEN
+
+FELDER:
+  PARAM         CHAR 30  KEY  Parameter
+  WERT          CHAR 100     Wert
+  BESCHREIBUNG  CHAR 80      Beschreibung
+
+BEISPIELDATEN:
+  FIRMA_NAME       Autohaus HESSEN GmbH
+  FIRMA_STRASSE    Musterstraße 1
+  FIRMA_PLZ        60311
+  FIRMA_ORT        Frankfurt am Main
+  MWST_SATZ        19.00
+  WAEHRUNG         EUR
+  ZAHLUNGSZIEL     14

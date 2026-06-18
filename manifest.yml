@@ -1,0 +1,28 @@
+---
+applications:
+  - name: autohaus-hessen-api
+    path: server
+    memory: 128M
+    disk_quota: 512M
+    instances: 1
+    buildpacks:
+      - nodejs_buildpack
+    services:
+      - autohaus-hessen-xsuaa
+      - autohaus-hessen-schema
+    env:
+      NODE_ENV: production
+
+  - name: autohaus-hessen-approuter
+    path: approuter
+    memory: 128M
+    disk_quota: 512M
+    instances: 1
+    buildpacks:
+      - nodejs_buildpack
+    services:
+      - autohaus-hessen-xsuaa
+    env:
+      NODE_ENV: production
+      destinations: >
+        [{"name":"autohaus-api","url":"https://autohaus-hessen-api.cfapps.us10-001.hana.ondemand.com","forwardAuthToken":true}]

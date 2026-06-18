@@ -1,0 +1,105 @@
+<mvc:View
+    controllerName="de.autohaushessen.zahfahrzeug.controller.FahrzeugList"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.f">
+    <Page id="fahrzeugListPage" title="{i18n>listTitle}" showNavButton="false">
+        <customHeader>
+            <Bar>
+                <contentLeft>
+                    <Title text="{i18n>listTitle}" level="H4" />
+                </contentLeft>
+                <contentMiddle>
+                    <SearchField
+                        id="searchField"
+                        width="100%"
+                        placeholder="Marke, Modell, FIN suchen..."
+                        search=".onSearch" />
+                </contentMiddle>
+                <contentRight>
+                    <Button icon="sap-icon://refresh" tooltip="{i18n>btnRefresh}" press=".onRefresh" />
+                    <Button icon="sap-icon://add" text="{i18n>btnNeu}" type="Emphasized" press=".onCreate" />
+                </contentRight>
+            </Bar>
+        </customHeader>
+        <content>
+            <IconTabBar id="statusTabBar" select=".onStatusFilter" class="sapUiResponsiveContentPadding">
+                <items>
+                    <IconTabFilter text="Alle" key="ALL" icon="sap-icon://car-rental" />
+                    <IconTabFilter text="{i18n>statusBESTAND}" key="BESTAND" icon="sap-icon://inventory" />
+                    <IconTabFilter text="{i18n>statusRESV}" key="RESV" icon="sap-icon://locked" />
+                    <IconTabFilter text="{i18n>statusWS}" key="WS" icon="sap-icon://wrench" />
+                </items>
+                <content>
+                    <Table
+                        id="fahrzeugTable"
+                        items="{
+                            path: '/Fahrzeug',
+                            parameters: { $expand: '_Marke' },
+                            sorter: { path: 'Modell' }
+                        }"
+                        mode="SingleSelectMaster"
+                        growing="true"
+                        growingThreshold="20"
+                        itemPress=".onItemPress"
+                        sticky="ColumnHeaders,HeaderToolbar">
+                        <headerToolbar>
+                            <OverflowToolbar>
+                                <Title text="Fahrzeuge" />
+                                <ToolbarSpacer />
+                                <Button
+                                    text="{i18n>btnReservieren}"
+                                    icon="sap-icon://locked"
+                                    press=".onReservieren"
+                                    enabled="{= ${ui>/selectedStatus} === 'BESTAND'}" />
+                                <Button
+                                    text="{i18n>btnFreigeben}"
+                                    icon="sap-icon://unlocked"
+                                    press=".onFreigeben"
+                                    enabled="{= ${ui>/selectedStatus} === 'RESV'}" />
+                                <Button
+                                    text="{i18n>btnAusliefern}"
+                                    icon="sap-icon://shipping-status"
+                                    type="Emphasized"
+                                    press=".onAusliefern"
+                                    enabled="{= ${ui>/selectedStatus} === 'RESV'}" />
+                            </OverflowToolbar>
+                        </headerToolbar>
+                        <columns>
+                            <Column><Text text="{i18n>colFin}" /></Column>
+                            <Column><Text text="{i18n>colMarke}" /></Column>
+                            <Column><Text text="{i18n>colModell}" /></Column>
+                            <Column><Text text="{i18n>colBaujahr}" /></Column>
+                            <Column><Text text="{i18n>colFarbe}" /></Column>
+                            <Column hAlign="End"><Text text="{i18n>colKmStand}" /></Column>
+                            <Column hAlign="End"><Text text="{i18n>colPreis}" /></Column>
+                            <Column><Text text="{i18n>colStatus}" /></Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem type="Navigation">
+                                <cells>
+                                    <Text text="{Fin}" />
+                                    <Text text="{_Marke/Bezeichnung}" />
+                                    <Text text="{Modell}" />
+                                    <Text text="{Baujahr}" />
+                                    <Text text="{Farbe}" />
+                                    <ObjectNumber number="{KmStand}" unit="km" />
+                                    <ObjectNumber
+                                        number="{
+                                            path: 'Verkaufspreis',
+                                            type: 'sap.ui.model.type.Currency',
+                                            formatOptions: { currencyCode: 'EUR' }
+                                        }" />
+                                    <ObjectStatus
+                                        text="{Status}"
+                                        state="{= ${Status} === 'BESTAND' ? 'Success' : ${Status} === 'RESV' ? 'Warning' : 'None'}" />
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </content>
+            </IconTabBar>
+        </content>
+    </Page>
+</mvc:View>

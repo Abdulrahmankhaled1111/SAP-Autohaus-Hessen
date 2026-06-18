@@ -1,0 +1,129 @@
+<mvc:View
+    controllerName="de.autohaushessen.zahdashboard.controller.Dashboard"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:layout="sap.ui.layout"
+    xmlns:mc="sap.suite.ui.microchart"
+    displayBlock="true">
+    <Page title="Autohaus HESSEN – Dashboard" showHeader="true">
+        <customHeader>
+            <Bar>
+                <contentLeft>
+                    <Image src="https://www.sap.com/dam/application/shared/logos/sap-logo-svg.svg" width="3rem" />
+                    <Title text="Autohaus HESSEN GmbH" level="H3" />
+                </contentLeft>
+                <contentRight>
+                    <Text text="{app>/date}" />
+                    <Button icon="sap-icon://refresh" press=".onRefresh" />
+                </contentRight>
+            </Bar>
+        </customHeader>
+        <content>
+            <layout:Grid defaultSpan="L3 M6 S12" class="sapUiSmallMargin">
+                <!-- KPI: Fahrzeuge im Bestand -->
+                <layout:content>
+                    <GenericTile
+                        header="Fahrzeuge im Bestand"
+                        subheader="Verfügbar zum Verkauf"
+                        frame="Background"
+                        press=".onNavigateBestand">
+                        <TileContent>
+                            <NumericContent
+                                value="{dashboard>/bestandAnzahl}"
+                                indicator="Up"
+                                valueColor="Good"
+                                icon="sap-icon://car-rental"
+                                withMargin="false" />
+                        </TileContent>
+                    </GenericTile>
+                </layout:content>
+
+                <!-- KPI: Reserviert -->
+                <layout:content>
+                    <GenericTile header="Reserviert" subheader="Für Kunden reserviert" frame="Background">
+                        <TileContent>
+                            <NumericContent
+                                value="{dashboard>/reserviertAnzahl}"
+                                valueColor="Critical"
+                                icon="sap-icon://locked" />
+                        </TileContent>
+                    </GenericTile>
+                </layout:content>
+
+                <!-- KPI: Umsatz Monat -->
+                <layout:content>
+                    <GenericTile header="Umsatz (Monat)" subheader="Brutto" frame="Background" press=".onNavigateUmsatz">
+                        <TileContent>
+                            <NumericContent
+                                value="{dashboard>/umsatzMonat}"
+                                scale="EUR"
+                                valueColor="Good"
+                                indicator="Up"
+                                icon="sap-icon://money-bills" />
+                        </TileContent>
+                    </GenericTile>
+                </layout:content>
+
+                <!-- KPI: Offene Rechnungen -->
+                <layout:content>
+                    <GenericTile header="Offene Rechnungen" subheader="Noch nicht bezahlt" frame="Background">
+                        <TileContent>
+                            <NumericContent
+                                value="{dashboard>/offeneRechnungen}"
+                                valueColor="Error"
+                                icon="sap-icon://payment-approval" />
+                        </TileContent>
+                    </GenericTile>
+                </layout:content>
+
+                <!-- Schnellzugriff -->
+                <layout:content>
+                    <Panel headerText="Schnellzugriff" class="sapUiMediumMarginTop">
+                        <HBox wrap="Wrap" justifyContent="Start">
+                            <Button text="Fahrzeuge" icon="sap-icon://car-rental" type="Emphasized"
+                                press=".onNavFahrzeug" class="sapUiSmallMarginEnd sapUiSmallMarginBottom" />
+                            <Button text="Kunden" icon="sap-icon://person-placeholder"
+                                press=".onNavKunde" class="sapUiSmallMarginEnd sapUiSmallMarginBottom" />
+                            <Button text="Verkauf" icon="sap-icon://sales-order"
+                                press=".onNavVerkauf" class="sapUiSmallMarginEnd sapUiSmallMarginBottom" />
+                            <Button text="Bestand" icon="sap-icon://inventory"
+                                press=".onNavigateBestand" class="sapUiSmallMarginEnd sapUiSmallMarginBottom" />
+                            <Button text="Rechnungen" icon="sap-icon://money-bills"
+                                press=".onNavRechnung" class="sapUiSmallMarginEnd sapUiSmallMarginBottom" />
+                        </HBox>
+                    </Panel>
+                </layout:content>
+
+                <!-- Letzte Verkäufe -->
+                <layout:content>
+                    <Panel headerText="Letzte Verkäufe" class="sapUiMediumMarginTop" width="100%">
+                        <Table
+                            id="verkaufTable"
+                            items="{/Umsatz}"
+                            growing="true"
+                            growingThreshold="5">
+                            <columns>
+                                <Column><Text text="Datum" /></Column>
+                                <Column><Text text="Kunde" /></Column>
+                                <Column hAlign="End"><Text text="Betrag" /></Column>
+                                <Column><Text text="Status" /></Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <Text text="{Rechnungsdatum}" />
+                                        <Text text="{Kundenname}" />
+                                        <ObjectNumber number="{Brutto}" unit="EUR" />
+                                        <ObjectStatus text="{Status}"
+                                            state="{= ${Status} === 'BEZAHLT' ? 'Success' : 'Warning'}" />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </Panel>
+                </layout:content>
+            </layout:Grid>
+        </content>
+    </Page>
+</mvc:View>

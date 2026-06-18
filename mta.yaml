@@ -1,0 +1,77 @@
+_schema-version: "3.2"
+ID: autohaus-hessen-sap
+version: 1.0.0
+description: Autohaus HESSEN Management Suite fuer SAP BTP
+
+parameters:
+  enable-parallel-deployments: true
+
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm run build:btp
+
+modules:
+  - name: autohaus-hessen-ui
+    type: html5
+    path: .
+    build-parameters:
+      build-result: dist
+      supported-platforms: []
+
+  - name: autohaus-hessen-app-content
+    type: com.sap.application.content
+    path: .
+    requires:
+      - name: autohaus-hessen-html5-repo-host
+        parameters:
+          content-target: true
+    build-parameters:
+      build-result: resources
+      requires:
+        - name: autohaus-hessen-ui
+          artifacts:
+            - autohaus-hessen-ui.zip
+          target-path: resources/
+
+  - name: autohaus-hessen-approuter
+    type: nodejs
+    path: approuter
+    parameters:
+      disk-quota: 256M
+      memory: 128M
+      keep-existing-routes: true
+    requires:
+      - name: autohaus-hessen-xsuaa
+      - name: autohaus-hessen-html5-repo-runtime
+      - name: autohaus-hessen-destination-service
+    properties:
+      TENANT_HOST_PATTERN: "^(.*)-autohaus-hessen-approuter.${default-domain}"
+
+resources:
+  - name: autohaus-hessen-xsuaa
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+
+  - name: autohaus-hessen-html5-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host
+
+  - name: autohaus-hessen-html5-repo-runtime
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-runtime
+
+  - name: autohaus-hessen-destination-service
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
+

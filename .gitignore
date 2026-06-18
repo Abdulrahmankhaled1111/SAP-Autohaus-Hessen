@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Build and tooling output
+dist/
+build/
+resources/
+mta_archives/
+.ui5/
+.cache/
+coverage/
+tools/cf-cli/
+
+# Local runtime files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+server/data/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Temporary exports
+*.tmp
+*.bak
+autohaus-hessen-demo-daten.json

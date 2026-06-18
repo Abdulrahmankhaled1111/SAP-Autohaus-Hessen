@@ -1,0 +1,15 @@
+{
+  "name": "autohaus-hessen-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ERP API fuer die Autohaus HESSEN Management Suite",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "@sap/hana-client": "^2.26.21"
+  }
+}

@@ -1,0 +1,29 @@
+*----------------------------------------------------------------------*
+* Tabelle: ZAH_MARKE
+* Fahrzeugmarken (VW, BMW, Mercedes-Benz, Audi, …)
+* SE11 → Datenbanktabelle → Anlegen
+*----------------------------------------------------------------------*
+TABNAME: ZAH_MARKE
+TABCLASS: TRANSP
+DDTEXT: Fahrzeugmarken Autohaus HESSEN
+
+FELDER:
+  MARKE_ID    CHAR  4  KEY  Marken-ID
+  BEZEICHNUNG CHAR 40      Markenbezeichnung
+  HERKUNFT    CHAR 20      Herkunftsland
+  AKTIV       CHAR  1      Aktiv (X = Ja)
+
+TECHNISCHE EINSTELLUNGEN:
+  Datenbank: ROW STORE
+  Größenkategorie: 0
+  Pufferung: vollständig gepuffert
+
+BEISPIELDATEN (SM30):
+  0001  Volkswagen      Deutschland  X
+  0002  BMW             Deutschland  X
+  0003  Mercedes-Benz   Deutschland  X
+  0004  Audi            Deutschland  X
+  0005  Opel            Deutschland  X
+  0006  Ford            USA          X
+  0007  Toyota          Japan        X
+  0008  Hyundai         Korea        X

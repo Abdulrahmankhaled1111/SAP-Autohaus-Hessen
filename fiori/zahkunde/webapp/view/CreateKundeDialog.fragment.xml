@@ -1,0 +1,44 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form">
+    <Dialog title="Neuer Kunde" contentWidth="500px">
+        <content>
+            <f:SimpleForm id="createKundeForm" editable="true" layout="ResponsiveGridLayout"
+                binding="{/Kunde('NEW')}">
+                <f:content>
+                    <Label text="Kundentyp" required="true" />
+                    <Select selectedKey="{Kundentyp}">
+                        <core:Item key="P" text="Privatkunde" />
+                        <core:Item key="G" text="Gewerbekunde" />
+                    </Select>
+                    <Label text="Anrede" />
+                    <Select selectedKey="{Anrede}">
+                        <core:Item key="Herr" text="Herr" />
+                        <core:Item key="Frau" text="Frau" />
+                        <core:Item key="Firma" text="Firma" />
+                    </Select>
+                    <Label text="Nachname" required="true" />
+                    <Input value="{Nachname}" />
+                    <Label text="Vorname" />
+                    <Input value="{Vorname}" />
+                    <Label text="Straße" />
+                    <Input value="{Strasse}" />
+                    <Label text="PLZ / Ort" />
+                    <Input value="{Plz}" width="30%" />
+                    <Input value="{Ort}" width="65%" />
+                    <Label text="Telefon" />
+                    <Input value="{Telefon}" type="Tel" />
+                    <Label text="E-Mail" />
+                    <Input value="{Email}" type="Email" />
+                </f:content>
+            </f:SimpleForm>
+        </content>
+        <beginButton>
+            <Button text="Speichern" type="Emphasized" press=".onSaveKunde" />
+        </beginButton>
+        <endButton>
+            <Button text="Abbrechen" press=".onCancelCreate" />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

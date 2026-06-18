@@ -1,0 +1,23 @@
+{
+  "name": "autohaus-hessen-sap",
+  "version": "1.0.0",
+  "description": "Autohaus HESSEN GmbH - SAP Fiori Autohaus System",
+  "scripts": {
+    "start": "npx --yes http-server . -p 8080 -o index.html",
+    "start:api": "node server/server.js",
+    "start:erp": "node server/server.js",
+    "start:fahrzeug": "npx --yes http-server fiori/zahfahrzeug/webapp -p 8081 -o index.html",
+    "start:dashboard": "npx --yes http-server fiori/zahdashboard/webapp -p 8082 -o index.html",
+    "start:kunde": "npx --yes http-server fiori/zahkunde/webapp -p 8083 -o index.html",
+    "start:verkauf": "npx --yes http-server fiori/zahverkauf/webapp -p 8084 -o index.html",
+    "check": "node --check assets/app.js && node --check assets/launchpad.js && node --check server/server.js",
+    "build:btp": "node tools/build-btp.mjs"
+  },
+  "devDependencies": {
+    "@sap/ux-ui5-tooling": "^1.14.0",
+    "@ui5/cli": "^3.0.0"
+  },
+  "ui5": {
+    "dependencies": []
+  }
+}

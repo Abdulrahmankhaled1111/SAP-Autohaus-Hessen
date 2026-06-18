@@ -1,0 +1,11 @@
+{
+  "data": {
+    "edition": "cloud",
+    "memory": 16,
+    "generateSystemPassword": true,
+    "serviceStopped": false,
+    "backup": {
+      "retentionDays": 14
+    }
+  }
+}

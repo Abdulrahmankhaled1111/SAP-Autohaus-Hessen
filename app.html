@@ -1,0 +1,517 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Autohaus HESSEN - Fiori App</title>
+  <link rel="stylesheet" href="assets/app.css?v=20260618-fiori-launchpad">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">AH</div>
+        <div>
+          <div class="brand-title">Autohaus HESSEN</div>
+          <div class="brand-subtitle" id="appContextLabel">Fiori App Suite</div>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Hauptnavigation">
+        <button data-view="dashboard">Dashboard</button>
+        <button data-view="vehicles">Fahrzeuge</button>
+        <button data-view="customers">Kunden</button>
+        <button data-view="sales">Verkauf</button>
+        <button data-view="finance">Finanzen</button>
+        <button data-view="documents">Dokumente</button>
+        <button data-view="tasks">Aufgaben</button>
+        <button data-view="tickets">Tickets</button>
+        <button data-view="correspondence">Briefe & Versand</button>
+        <button data-view="hr">Personal</button>
+        <button data-view="audit">Sicherheit</button>
+      </nav>
+      <div class="security-note" id="appContextNote">
+        ERP-Aufbau mit SAP/BTP-Login, zentraler API, Rollenbasis und Audit-Protokoll.
+        Für den Produktivbetrieb folgt als nächster Schritt SAP HANA Cloud als dauerhafte Datenbank.
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1 id="pageTitle">Dashboard</h1>
+        <div class="topbar-actions">
+          <label class="role-picker role-picker-hidden" aria-hidden="true">Rolle
+            <select id="roleSelect">
+              <option value="admin">Admin</option>
+              <option value="owner">Chef</option>
+              <option value="employee">Mitarbeiter</option>
+              <option value="sales">Verkauf</option>
+              <option value="finance">Finanzen</option>
+              <option value="hr">Personal</option>
+            </select>
+          </label>
+          <span class="user-chip" id="activeRole">Admin</span>
+          <button class="btn" id="launchpadButton">Launchpad</button>
+          <button class="btn" id="logoutButton">Abmelden</button>
+          <button class="btn" id="exportData">Daten exportieren</button>
+          <button class="btn danger" id="resetDemo">Demo zurücksetzen</button>
+        </div>
+      </header>
+
+      <section class="content">
+        <section class="view" id="view-dashboard">
+          <div class="kpi-grid">
+            <div class="kpi"><div class="kpi-label">Fahrzeuge verfügbar</div><div class="kpi-value" id="kpiVehicles">0</div></div>
+            <div class="kpi"><div class="kpi-label">Kunden</div><div class="kpi-value" id="kpiCustomers">0</div></div>
+            <div class="kpi"><div class="kpi-label">Offene Rechnungen</div><div class="kpi-value" id="kpiOpenInvoices">0</div></div>
+            <div class="kpi"><div class="kpi-label">Gebuchte Zahlungen</div><div class="kpi-value" id="kpiRevenue">0 EUR</div></div>
+            <div class="kpi"><div class="kpi-label">Offene Aufgaben</div><div class="kpi-value" id="kpiTasks">0</div></div>
+            <div class="kpi"><div class="kpi-label">Bestandswert</div><div class="kpi-value" id="kpiInventoryValue">0 EUR</div></div>
+          </div>
+          <div class="dashboard-grid">
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Aktuelle Rechnungen</div></div>
+              <div class="table-wrap">
+                <table id="recentTable">
+                  <thead><tr><th>Datum</th><th>Kunde</th><th>Fahrzeug</th><th>Betrag</th><th>Status</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Heute wichtig</div></div>
+              <div class="table-wrap">
+                <table id="dashboardTaskTable">
+                  <thead><tr><th>Fällig</th><th>Aufgabe</th><th>Bereich</th><th>Status</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="panel department-panel">
+            <div class="panel-header">
+              <div class="panel-title">Abteilungs-Cockpit</div>
+            </div>
+            <div class="department-grid" id="departmentCards"></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-vehicles">
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Fahrzeug anlegen</div></div>
+              <div class="panel-body">
+                <form id="vehicleForm" class="form-grid">
+                  <div class="field full"><label>FIN</label><input name="fin" maxlength="24" required></div>
+                  <div class="field"><label>Marke</label><input name="brand" required></div>
+                  <div class="field"><label>Modell</label><input name="model" required></div>
+                  <div class="field"><label>Baujahr</label><input name="year" type="number" min="1980" max="2035" required></div>
+                  <div class="field"><label>Farbe</label><input name="color" required></div>
+                  <div class="field"><label>Kilometer</label><input name="km" type="number" min="0" value="0"></div>
+                  <div class="field"><label>Verkaufspreis</label><input name="price" type="number" min="0" step="100" required></div>
+                  <div class="actions full"><button class="btn primary" type="submit">Fahrzeug speichern</button></div>
+                </form>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Fahrzeugbestand</div>
+                <div class="toolbar">
+                  <input id="vehicleSearch" placeholder="Suchen nach Marke, Modell, FIN">
+                  <select id="vehicleStatus">
+                    <option value="">Alle Status</option>
+                    <option>Bestand</option>
+                    <option>Reserviert</option>
+                    <option>Werkstatt</option>
+                  </select>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table id="vehicleTable">
+                  <thead><tr><th>FIN</th><th>Marke</th><th>Modell</th><th>Jahr</th><th>Farbe</th><th>KM</th><th>Preis</th><th>Status</th><th>Aktion</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-customers">
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Kunde anlegen</div></div>
+              <div class="panel-body">
+                <form id="customerForm" class="form-grid">
+                  <div class="field"><label>Kundentyp</label><select name="type"><option>Privat</option><option>Gewerbe</option></select></div>
+                  <div class="field"><label>Anrede</label><select name="salutation"><option>Herr</option><option>Frau</option><option>Firma</option></select></div>
+                  <div class="field"><label>Vorname</label><input name="firstName"></div>
+                  <div class="field"><label>Name / Firma</label><input name="lastName" required></div>
+                  <div class="field full"><label>Firma optional</label><input name="company"></div>
+                  <div class="field full"><label>Straße</label><input name="street"></div>
+                  <div class="field"><label>PLZ</label><input name="zip"></div>
+                  <div class="field"><label>Ort</label><input name="city" required></div>
+                  <div class="field"><label>Telefon</label><input name="phone"></div>
+                  <div class="field"><label>E-Mail</label><input name="email" type="email" required></div>
+                  <div class="actions full"><button class="btn primary" type="submit">Kunde speichern</button></div>
+                </form>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Kundenstamm</div><div class="toolbar"><input id="customerSearch" placeholder="Kunden suchen"></div></div>
+              <div class="table-wrap">
+                <table id="customerTable">
+                  <thead><tr><th>Nr.</th><th>Typ</th><th>Name</th><th>Ort</th><th>Telefon</th><th>E-Mail</th><th>Notizen</th><th>Aktion</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="grid-2 stacked">
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Kunden-Notiz anlegen</div></div>
+              <div class="panel-body">
+                <form id="noteForm" class="form-grid">
+                  <div class="field full"><label>Kunde</label><select id="noteCustomer" name="customerId" required></select></div>
+                  <div class="field full"><label>Notiz</label><textarea name="text" rows="3" required placeholder="Gespräch, Wunsch, Finanzierung, Rückruf..."></textarea></div>
+                  <div class="actions full"><button class="btn primary" type="submit">Notiz speichern</button></div>
+                </form>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Letzte Kunden-Notizen</div></div>
+              <div class="table-wrap">
+                <table id="noteTable">
+                  <thead><tr><th>Datum</th><th>Kunde</th><th>Notiz</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-sales">
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Verkaufsauftrag erstellen</div></div>
+              <div class="panel-body">
+                <form id="saleForm" class="form-grid">
+                  <div class="field full"><label>Kunde</label><select id="saleCustomer" name="customerId" required></select></div>
+                  <div class="field full"><label>Fahrzeug im Bestand</label><select id="saleVehicle" name="vehicleId" required></select></div>
+                  <div class="field"><label>Rabatt EUR</label><input name="discount" type="number" min="0" value="0"></div>
+                  <div class="field"><label>Anzahlung EUR</label><input name="deposit" type="number" min="0" value="0"></div>
+                  <div class="field full"><label>Notiz</label><textarea name="note" rows="3"></textarea></div>
+                  <div class="actions full"><button class="btn primary" type="submit">Auftrag und Rechnung erstellen</button></div>
+                </form>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Aufträge</div></div>
+              <div class="table-wrap">
+                <table id="salesTable">
+                  <thead><tr><th>Auftrag</th><th>Datum</th><th>Kunde</th><th>Fahrzeug</th><th>Betrag</th><th>Status</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="grid-2 stacked">
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Anfrage oder Angebot erstellen</div></div>
+              <div class="panel-body">
+                <form id="requestForm" class="form-grid">
+                  <div class="field"><label>Dokumenttyp</label><select name="type"><option>Anfrage</option><option>Angebot</option></select></div>
+                  <div class="field"><label>Kunde</label><select id="requestCustomer" name="customerId" required></select></div>
+                  <div class="field full"><label>Fahrzeug</label><select id="requestVehicle" name="vehicleId"></select></div>
+                  <div class="field"><label>Betrag EUR</label><input name="amount" type="number" min="0" step="100"></div>
+                  <div class="field"><label>Gültig bis</label><input name="validUntil" type="date"></div>
+                  <div class="field full"><label>Text</label><textarea name="text" rows="3" placeholder="Kundenwunsch, Ausstattung, Konditionen..."></textarea></div>
+                  <div class="actions full"><button class="btn primary" type="submit">Dokument speichern</button></div>
+                </form>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Anfragen und Angebote</div></div>
+              <div class="table-wrap">
+                <table id="requestTable">
+                  <thead><tr><th>Nr.</th><th>Typ</th><th>Kunde</th><th>Fahrzeug</th><th>Betrag</th><th>Status</th><th>Versand</th><th>Aktion</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-finance">
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Zahlung buchen</div></div>
+              <div class="panel-body">
+                <form id="paymentForm" class="form-grid">
+                  <div class="field full"><label>Offene Rechnung</label><select id="paymentInvoice" name="invoiceId" required></select></div>
+                  <div class="field full"><label>Zahlungsbetrag EUR</label><input name="amount" type="number" min="1" step="0.01" required></div>
+                  <div class="actions full"><button class="btn primary" type="submit">Zahlung verbuchen</button></div>
+                </form>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Rechnungswesen</div>
+                <div class="toolbar">
+                  <select id="invoiceStatus">
+                    <option value="">Alle Rechnungen</option>
+                    <option>Offen</option>
+                    <option>Teilbezahlt</option>
+                    <option>Bezahlt</option>
+                  </select>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table id="invoiceTable">
+                  <thead><tr><th>Rechnung</th><th>Datum</th><th>Fällig</th><th>Kunde</th><th>Fahrzeug</th><th>Brutto</th><th>Bezahlt</th><th>Offen</th><th>Status</th><th>Versand</th><th>Aktion</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-documents">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">Druckbare Unternehmensdokumente</div>
+              <div class="toolbar"><button class="btn" id="printDocumentList">Übersicht drucken</button></div>
+            </div>
+            <div class="table-wrap">
+                <table id="documentTable">
+                <thead><tr><th>Datum</th><th>Typ</th><th>Nummer</th><th>Kunde</th><th>Betrag</th><th>Status</th><th>Versand</th><th>Aktion</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-tasks">
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Aufgabe oder Termin anlegen</div></div>
+              <div class="panel-body">
+                <form id="taskForm" class="form-grid">
+                  <div class="field"><label>Art</label><select name="type"><option>Aufgabe</option><option>Termin</option></select></div>
+                  <div class="field"><label>Bereich</label><select name="area"><option>Verkauf</option><option>Service</option><option>Finanzen</option><option>Personal</option><option>Management</option><option>Dokumente</option></select></div>
+                  <div class="field"><label>Fällig am</label><input name="dueDate" type="date" required></div>
+                  <div class="field"><label>Uhrzeit</label><input name="time" type="time"></div>
+                  <div class="field"><label>Priorität</label><select name="priority"><option>Normal</option><option>Hoch</option><option>Niedrig</option></select></div>
+                  <div class="field full"><label>Titel</label><input name="title" required placeholder="Probefahrt, Rückruf, Zahlung prüfen..."></div>
+                  <div class="field"><label>Kunde optional</label><select id="taskCustomer" name="customerId"></select></div>
+                  <div class="field"><label>Fahrzeug optional</label><select id="taskVehicle" name="vehicleId"></select></div>
+                  <div class="field full"><label>Notiz</label><textarea name="note" rows="3"></textarea></div>
+                  <div class="actions full"><button class="btn primary" type="submit">Aufgabe speichern</button></div>
+                </form>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Aufgaben & Termine</div>
+                <div class="toolbar">
+                  <select id="taskArea">
+                    <option value="">Alle Abteilungen</option>
+                    <option>Verkauf</option>
+                    <option>Service</option>
+                    <option>Finanzen</option>
+                    <option>Personal</option>
+                    <option>Management</option>
+                    <option>Dokumente</option>
+                  </select>
+                  <select id="taskStatus">
+                    <option value="">Alle Status</option>
+                    <option>Offen</option>
+                    <option>Erledigt</option>
+                  </select>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table id="taskTable">
+                  <thead><tr><th>Datum</th><th>Zeit</th><th>Art</th><th>Bereich</th><th>Titel</th><th>Kunde</th><th>Fahrzeug</th><th>Priorität</th><th>Status</th><th>Aktion</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="panel department-panel">
+            <div class="panel-header">
+              <div class="panel-title">Abteilungs-Kalender</div>
+            </div>
+            <div class="calendar-board" id="departmentCalendar"></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-tickets">
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Ticket anlegen</div></div>
+              <div class="panel-body">
+                <form id="ticketForm" class="form-grid">
+                  <div class="field"><label>Abteilung</label><select name="area"><option>Verkauf</option><option>Service</option><option>Finanzen</option><option>Personal</option><option>Management</option><option>Dokumente</option></select></div>
+                  <div class="field"><label>Priorität</label><select name="priority"><option>Normal</option><option>Hoch</option><option>Niedrig</option></select></div>
+                  <div class="field"><label>Verantwortlich</label><select id="ticketOwner" name="ownerId"></select></div>
+                  <div class="field"><label>Fällig bis</label><input name="dueDate" type="date"></div>
+                  <div class="field full"><label>Titel</label><input name="title" required placeholder="z. B. Rechnung prüfen, Fahrzeugunterlagen fehlen, Kunde wartet..."></div>
+                  <div class="field"><label>Kunde optional</label><select id="ticketCustomer" name="customerId"></select></div>
+                  <div class="field"><label>Fahrzeug optional</label><select id="ticketVehicle" name="vehicleId"></select></div>
+                  <div class="field full"><label>Beschreibung</label><textarea name="description" rows="4" required></textarea></div>
+                  <div class="actions full"><button class="btn primary" type="submit">Ticket speichern</button></div>
+                </form>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Ticket-Board</div>
+                <div class="toolbar">
+                  <select id="ticketArea">
+                    <option value="">Alle Abteilungen</option>
+                    <option>Verkauf</option>
+                    <option>Service</option>
+                    <option>Finanzen</option>
+                    <option>Personal</option>
+                    <option>Management</option>
+                    <option>Dokumente</option>
+                  </select>
+                  <select id="ticketStatus">
+                    <option value="">Alle Status</option>
+                    <option>Offen</option>
+                    <option>In Arbeit</option>
+                    <option>Erledigt</option>
+                  </select>
+                </div>
+              </div>
+              <div class="ticket-board" id="ticketBoard"></div>
+            </div>
+          </div>
+          <div class="panel department-panel">
+            <div class="panel-header"><div class="panel-title">Ticketliste</div></div>
+            <div class="table-wrap">
+              <table id="ticketTable">
+                <thead><tr><th>Ticket</th><th>Fällig</th><th>Abteilung</th><th>Titel</th><th>Verantwortlich</th><th>Kunde</th><th>Fahrzeug</th><th>Priorität</th><th>Status</th><th>Aktion</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-correspondence">
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Professionellen Brief erstellen</div></div>
+              <div class="panel-body">
+                <form id="letterForm" class="form-grid">
+                  <div class="field"><label>Vorlage</label><select id="letterTemplate" name="template">
+                    <option value="welcome">Begrüßung / Erstkontakt</option>
+                    <option value="offerFollowup">Angebot nachfassen</option>
+                    <option value="appointment">Terminbestätigung</option>
+                    <option value="service">Service-Information</option>
+                    <option value="payment">Zahlungserinnerung freundlich</option>
+                  </select></div>
+                  <div class="field"><label>Kunde</label><select id="letterCustomer" name="customerId" required></select></div>
+                  <div class="field full"><label>Betreff</label><input id="letterSubject" name="subject" required></div>
+                  <div class="field full"><label>Brieftext</label><textarea id="letterBody" name="body" rows="9" required></textarea></div>
+                  <div class="actions full">
+                    <button class="btn primary" type="submit">Brief speichern</button>
+                    <button class="btn" type="button" id="previewLetter">Vorschau drucken</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Korrespondenz-Ausgang</div></div>
+              <div class="table-wrap">
+                <table id="letterTable">
+                  <thead><tr><th>Datum</th><th>Nr.</th><th>Kunde</th><th>Betreff</th><th>Status</th><th>Aktion</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-hr">
+          <div class="kpi-grid hr-kpi-grid">
+            <div class="kpi"><div class="kpi-label">Aktive Mitarbeiter</div><div class="kpi-value" id="hrActiveEmployees">0</div></div>
+            <div class="kpi"><div class="kpi-label">Bruttolohn Monat</div><div class="kpi-value" id="hrGrossPayroll">0 EUR</div></div>
+            <div class="kpi"><div class="kpi-label">Arbeitgeberkosten</div><div class="kpi-value" id="hrEmployerCost">0 EUR</div></div>
+            <div class="kpi"><div class="kpi-label">Abrechnungen Monat</div><div class="kpi-value" id="hrPayrollCount">0</div></div>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Mitarbeiter / Vertrag anlegen</div></div>
+              <div class="panel-body">
+                <form id="employeeForm" class="form-grid">
+                  <div class="field full"><label>Name</label><input name="name" required></div>
+                  <div class="field"><label>Personalnummer optional</label><input name="personnelNo" placeholder="wird sonst automatisch gesetzt"></div>
+                  <div class="field"><label>Bereich</label><select name="role"><option>Verkauf</option><option>Finanzen</option><option>Service</option><option>Einkauf</option><option>Personal</option><option>Geschäftsführung</option></select></div>
+                  <div class="field"><label>Eintritt</label><input name="startDate" type="date"></div>
+                  <div class="field"><label>Vertragsart</label><select name="contractType"><option>Vollzeit</option><option>Teilzeit</option><option>Minijob</option><option>Ausbildung</option></select></div>
+                  <div class="field"><label>Wochenstunden</label><input name="weeklyHours" type="number" min="1" max="60" step="0.5" value="40"></div>
+                  <div class="field"><label>Telefon</label><input name="phone"></div>
+                  <div class="field"><label>Brutto/Monat EUR</label><input name="monthlySalary" type="number" min="0" step="50" value="3200"></div>
+                  <div class="field"><label>Steuerklasse</label><select name="taxClass"><option>I</option><option>II</option><option>III</option><option>IV</option><option>V</option><option>VI</option></select></div>
+                  <div class="field"><label>Bundesland</label><select name="federalState"><option>Hessen</option><option>Bayern</option><option>Baden-Württemberg</option><option>Berlin</option><option>Hamburg</option><option>NRW</option><option>Andere</option></select></div>
+                  <div class="field"><label>Krankenversicherung</label><select name="healthInsurance"><option>Gesetzlich</option><option>Privat</option></select></div>
+                  <div class="field"><label>Kinder</label><input name="children" type="number" min="0" max="10" value="0"></div>
+                  <div class="field"><label>Kirchensteuer</label><select name="churchTax"><option>Nein</option><option>Ja</option></select></div>
+                  <div class="field"><label>Urlaubstage/Jahr</label><input name="vacationDays" type="number" min="0" max="40" value="28"></div>
+                  <div class="field full"><label>E-Mail</label><input name="email" type="email" required></div>
+                  <div class="actions full"><button class="btn primary" type="submit">Mitarbeiter speichern</button></div>
+                </form>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Personal</div></div>
+              <div class="table-wrap">
+                <table id="employeeTable">
+                  <thead><tr><th>Nr.</th><th>Name</th><th>Bereich</th><th>Vertrag</th><th>Steuer</th><th>Brutto</th><th>Netto Muster</th><th>AG-Kosten</th><th>Status</th><th>Aktion</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="grid-2 stacked">
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Lohnabrechnungen</div></div>
+              <div class="table-wrap">
+                <table id="payrollTable">
+                  <thead><tr><th>Nr.</th><th>Monat</th><th>Mitarbeiter</th><th>Brutto</th><th>Abzüge</th><th>Netto</th><th>AG-Kosten</th><th>Status</th><th>Aktion</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Personal-Fachbereich</div></div>
+              <div class="panel-body">
+                <div class="notice-box">
+                  <strong>Deutscher Muster-Lohnlauf</strong>
+                  <p>Die App berechnet eine strukturierte Musterabrechnung mit Steuerklasse, Krankenversicherung, Sozialversicherung, Arbeitgeberanteilen und Arbeitgeber-Gesamtkosten. Für echte Meldungen, ELStAM, Krankenkassen, DEUEV und Steuerrecht muss später ein zertifiziertes Lohnsystem oder Steuerbüro angebunden werden.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-audit">
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Sicherheits- und Änderungsprotokoll</div></div>
+            <div class="table-wrap">
+              <table id="auditTable">
+                <thead><tr><th>Zeit</th><th>Aktion</th><th>Details</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="sideSheet" class="side-sheet-backdrop" hidden></div>
+  <script src="assets/app.js?v=20260618-fiori-launchpad"></script>
+</body>
+</html>
+

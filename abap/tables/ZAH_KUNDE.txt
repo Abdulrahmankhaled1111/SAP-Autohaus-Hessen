@@ -1,0 +1,32 @@
+*----------------------------------------------------------------------*
+* Tabelle: ZAH_KUNDE
+* Kundenstamm
+*----------------------------------------------------------------------*
+TABNAME: ZAH_KUNDE
+TABCLASS: TRANSP
+DDTEXT: Kunden Autohaus HESSEN
+
+FELDER:
+  KUNDE_ID      CHAR 10  KEY  Kunden-ID
+  KUNDENTYP     CHAR  1      Kundentyp (P/G)         → ZAH_DE_KUNDENTYP
+  ANREDE        CHAR 10      Anrede                  → ZAH_DE_ANREDE
+  NACHNAME      CHAR 40      Nachname / Firmenname
+  VORNAME       CHAR 40      Vorname
+  STRASSE       CHAR 60      Straße
+  PLZ           CHAR 10      Postleitzahl
+  ORT           CHAR 40      Ort
+  LAND          CHAR  3      Land
+  TELEFON       CHAR 20      Telefon
+  MOBIL         CHAR 20      Mobiltelefon
+  EMAIL         CHAR 60      E-Mail
+  GEBURTSDAT    DATS         Geburtsdatum
+  STEUERNR      CHAR 20      Steuernummer (Gewerbe)
+  BEMERKUNG     CHAR 255     Bemerkung
+  AKTIV         CHAR  1      Aktiv (X = Ja)
+  ERSTELLT_AM   DATS         Erstellungsdatum
+  ERSTELLT_VON  CHAR 12      Erstellt von
+  GEANDERT_AM   DATS         Änderungsdatum
+  GEANDERT_VON  CHAR 12      Geändert von
+
+SUCHHILFE:
+  Index auf NACHNAME, ORT empfohlen

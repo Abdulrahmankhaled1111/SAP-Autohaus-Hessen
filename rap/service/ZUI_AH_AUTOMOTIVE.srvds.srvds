@@ -1,0 +1,12 @@
+@EndUserText.label: 'Autohaus HESSEN OData Service'
+define service ZUI_AH_AUTOMOTIVE {
+  expose ZC_AH_Fahrzeug as Fahrzeug;
+  expose ZC_AH_Kunde as Kunde;
+  expose ZC_AH_Marke as Marke;
+  expose ZC_AH_Lieferant as Lieferant;
+  expose ZC_AH_Auftrag as Auftrag;
+  expose ZC_AH_AuftragPos as AuftragPos;
+  expose ZC_AH_Rechnung as Rechnung;
+  expose ZC_AH_Bestand as Bestand;
+  expose ZC_AH_Umsatz as Umsatz;
+}

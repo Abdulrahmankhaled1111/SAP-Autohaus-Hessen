@@ -1,0 +1,127 @@
+{
+  "_version": "3.0.0",
+  "identification": {
+    "id": "ZAH_LAUNCHPAD",
+    "title": "Autohaus HESSEN",
+    "description": "SAP Fiori Launchpad fuer Autohaus HESSEN ERP",
+    "version": "2.0.0"
+  },
+  "payload": {
+    "visualizations": {
+      "ZAHDashboard-display": {
+        "vizType": "sap.ushell.StaticAppLauncher",
+        "vizConfig": {
+          "sap.app": { "title": "Dashboard", "subTitle": "Unternehmensueberblick", "icon": "sap-icon://bbyd-dashboard" },
+          "sap.flp": { "target": { "inboundId": "ZAHDashboard-display" } }
+        }
+      },
+      "ZAHFahrzeug-display": {
+        "vizType": "sap.ushell.StaticAppLauncher",
+        "vizConfig": {
+          "sap.app": { "title": "Fahrzeuge", "subTitle": "Bestand und Fahrzeugakte", "icon": "sap-icon://car-rental" },
+          "sap.flp": { "target": { "inboundId": "ZAHFahrzeug-display" } }
+        }
+      },
+      "ZAHKunde-display": {
+        "vizType": "sap.ushell.StaticAppLauncher",
+        "vizConfig": {
+          "sap.app": { "title": "Kunden", "subTitle": "Kundenakte und CRM", "icon": "sap-icon://customer" },
+          "sap.flp": { "target": { "inboundId": "ZAHKunde-display" } }
+        }
+      },
+      "ZAHVerkauf-display": {
+        "vizType": "sap.ushell.StaticAppLauncher",
+        "vizConfig": {
+          "sap.app": { "title": "Verkauf", "subTitle": "Anfragen, Angebote und Auftraege", "icon": "sap-icon://sales-order" },
+          "sap.flp": { "target": { "inboundId": "ZAHVerkauf-display" } }
+        }
+      },
+      "ZAHFinanzen-display": {
+        "vizType": "sap.ushell.StaticAppLauncher",
+        "vizConfig": {
+          "sap.app": { "title": "Finanzen", "subTitle": "Rechnungen und Zahlungen", "icon": "sap-icon://money-bills" },
+          "sap.flp": { "target": { "inboundId": "ZAHFinanzen-display" } }
+        }
+      },
+      "ZAHDokumente-display": {
+        "vizType": "sap.ushell.StaticAppLauncher",
+        "vizConfig": {
+          "sap.app": { "title": "Dokumente", "subTitle": "Archiv und Druck", "icon": "sap-icon://documents" },
+          "sap.flp": { "target": { "inboundId": "ZAHDokumente-display" } }
+        }
+      },
+      "ZAHPersonal-display": {
+        "vizType": "sap.ushell.StaticAppLauncher",
+        "vizConfig": {
+          "sap.app": { "title": "Personal", "subTitle": "Mitarbeiter und Lohn", "icon": "sap-icon://employee" },
+          "sap.flp": { "target": { "inboundId": "ZAHPersonal-display" } }
+        }
+      },
+      "ZAHAufgaben-display": {
+        "vizType": "sap.ushell.StaticAppLauncher",
+        "vizConfig": {
+          "sap.app": { "title": "Aufgaben", "subTitle": "Kalender und Termine", "icon": "sap-icon://appointment-2" },
+          "sap.flp": { "target": { "inboundId": "ZAHAufgaben-display" } }
+        }
+      },
+      "ZAHTickets-display": {
+        "vizType": "sap.ushell.StaticAppLauncher",
+        "vizConfig": {
+          "sap.app": { "title": "Tickets", "subTitle": "Arbeitssteuerung", "icon": "sap-icon://activity-items" },
+          "sap.flp": { "target": { "inboundId": "ZAHTickets-display" } }
+        }
+      },
+      "ZAHBriefe-display": {
+        "vizType": "sap.ushell.StaticAppLauncher",
+        "vizConfig": {
+          "sap.app": { "title": "Briefe", "subTitle": "Korrespondenz", "icon": "sap-icon://email" },
+          "sap.flp": { "target": { "inboundId": "ZAHBriefe-display" } }
+        }
+      }
+    },
+    "groups": [
+      {
+        "id": "ZAH_MANAGEMENT_GRP",
+        "title": "Management",
+        "isPreset": true,
+        "isVisible": true,
+        "tiles": [
+          { "id": "ZAHDashboard-display" }
+        ]
+      },
+      {
+        "id": "ZAH_VERKAUF_GRP",
+        "title": "Verkauf und Bestand",
+        "isPreset": true,
+        "isVisible": true,
+        "tiles": [
+          { "id": "ZAHFahrzeug-display" },
+          { "id": "ZAHKunde-display" },
+          { "id": "ZAHVerkauf-display" }
+        ]
+      },
+      {
+        "id": "ZAH_BACKOFFICE_GRP",
+        "title": "Backoffice",
+        "isPreset": true,
+        "isVisible": true,
+        "tiles": [
+          { "id": "ZAHFinanzen-display" },
+          { "id": "ZAHDokumente-display" },
+          { "id": "ZAHPersonal-display" }
+        ]
+      },
+      {
+        "id": "ZAH_WORKFLOW_GRP",
+        "title": "Zusammenarbeit",
+        "isPreset": true,
+        "isVisible": true,
+        "tiles": [
+          { "id": "ZAHAufgaben-display" },
+          { "id": "ZAHTickets-display" },
+          { "id": "ZAHBriefe-display" }
+        ]
+      }
+    ]
+  }
+}

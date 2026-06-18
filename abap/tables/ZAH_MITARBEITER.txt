@@ -1,0 +1,25 @@
+*----------------------------------------------------------------------*
+* Tabelle: ZAH_MITARBEITER
+* Verkäufer und Mitarbeiter
+*----------------------------------------------------------------------*
+TABNAME: ZAH_MITARBEITER
+TABCLASS: TRANSP
+DDTEXT: Mitarbeiter Autohaus HESSEN
+
+FELDER:
+  MITARBEITER_ID  CHAR 10  KEY  Mitarbeiter-ID
+  PERSONALNR      CHAR 10      SAP-Personalnummer (optional)
+  VORNAME         CHAR 40      Vorname
+  NACHNAME        CHAR 40      Nachname
+  ABTEILUNG       CHAR 20      Abteilung (Verkauf, Einkauf, …)
+  POSITION        CHAR 30      Position
+  TELEFON         CHAR 20      Telefon
+  EMAIL           CHAR 60      E-Mail
+  EINTRITT        DATS         Eintrittsdatum
+  AKTIV           CHAR  1      Aktiv (X = Ja)
+
+BEISPIELDATEN:
+  M00001  Max    Müller    Verkauf   Verkaufsberater
+  M00002  Anna   Schmidt   Verkauf   Verkaufsberater
+  M00003  Peter  Weber     Einkauf   Einkäufer
+  M00004  Lisa   Fischer   Buchhaltung  Sachbearbeiter

@@ -1,0 +1,90 @@
+<mvc:View
+    controllerName="de.autohaushessen.zahfahrzeug.controller.FahrzeugDetail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form">
+    <Page
+        title="{i18n>detailTitle}"
+        showNavButton="true"
+        navButtonPress=".onNavBack">
+        <ObjectHeader
+            title="{Modell}"
+            number="{
+                path: 'Verkaufspreis',
+                type: 'sap.ui.model.type.Currency',
+                formatOptions: { currencyCode: 'EUR' }
+            }"
+            numberUnit="EUR"
+            intro="{_Marke/Bezeichnung}"
+            icon="sap-icon://car-rental">
+            <attributes>
+                <ObjectAttribute title="FIN" text="{Fin}" />
+                <ObjectAttribute title="{i18n>colStatus}" text="{Status}" />
+                <ObjectAttribute title="{i18n>colBaujahr}" text="{Baujahr}" />
+            </attributes>
+            <statuses>
+                <ObjectStatus
+                    text="{Status}"
+                    state="{= ${Status} === 'BESTAND' ? 'Success' : ${Status} === 'RESV' ? 'Warning' : 'Information'}" />
+            </statuses>
+        </ObjectHeader>
+        <content>
+            <IconTabBar>
+                <items>
+                    <IconTabFilter text="{i18n>sectionAllgemein}" icon="sap-icon://detail-view">
+                        <f:SimpleForm editable="false" layout="ResponsiveGridLayout">
+                            <f:content>
+                                <Label text="FIN" /><Text text="{Fin}" />
+                                <Label text="{i18n>colMarke}" /><Text text="{_Marke/Bezeichnung}" />
+                                <Label text="{i18n>colModell}" /><Text text="{Modell}" />
+                                <Label text="{i18n>colFarbe}" /><Text text="{Farbe}" />
+                                <Label text="Kennzeichen" /><Text text="{Kennzeichen}" />
+                                <Label text="Eingangsdatum" /><Text text="{Eingangsdatum}" />
+                            </f:content>
+                        </f:SimpleForm>
+                    </IconTabFilter>
+                    <IconTabFilter text="{i18n>sectionTechnik}" icon="sap-icon://technical-object">
+                        <f:SimpleForm editable="false" layout="ResponsiveGridLayout">
+                            <f:content>
+                                <Label text="Kraftstoff" /><Text text="{Kraftstoff}" />
+                                <Label text="Getriebe" /><Text text="{Getriebe}" />
+                                <Label text="Leistung" /><Text text="{LeistungKw} kW" />
+                                <Label text="Hubraum" /><Text text="{Hubraum} ccm" />
+                                <Label text="{i18n>colKmStand}" /><Text text="{KmStand} km" />
+                                <Label text="TÜV bis" /><Text text="{TuevBis}" />
+                            </f:content>
+                        </f:SimpleForm>
+                    </IconTabFilter>
+                    <IconTabFilter text="{i18n>sectionPreise}" icon="sap-icon://money-bills">
+                        <f:SimpleForm editable="false" layout="ResponsiveGridLayout">
+                            <f:content>
+                                <Label text="Einkaufspreis" />
+                                <ObjectNumber number="{Einkaufspreis}" unit="EUR" />
+                                <Label text="Verkaufspreis" />
+                                <ObjectNumber number="{Verkaufspreis}" unit="EUR" emphasized="true" />
+                                <Label text="Marge" />
+                                <ObjectNumber
+                                    number="{
+                                        parts: [{path: 'Verkaufspreis'}, {path: 'Einkaufspreis'}],
+                                        formatter: '.formatMarge'
+                                    }"
+                                    unit="EUR"
+                                    state="Success" />
+                            </f:content>
+                        </f:SimpleForm>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </content>
+        <footer>
+            <OverflowToolbar>
+                <ToolbarSpacer />
+                <Button text="{i18n>btnReservieren}" icon="sap-icon://locked" press=".onReservieren"
+                    visible="{= ${Status} === 'BESTAND'}" />
+                <Button text="{i18n>btnAusliefern}" icon="sap-icon://shipping-status" type="Emphasized"
+                    press=".onAusliefern" visible="{= ${Status} === 'RESV'}" />
+            </OverflowToolbar>
+        </footer>
+    </Page>
+</mvc:View>

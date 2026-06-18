@@ -1,0 +1,41 @@
+*----------------------------------------------------------------------*
+* Tabelle: ZAH_AUFTRAG (Kopf)
+* Verkaufsaufträge
+*----------------------------------------------------------------------*
+TABNAME: ZAH_AUFTRAG
+TABCLASS: TRANSP
+DDTEXT: Verkaufsaufträge Autohaus HESSEN
+
+FELDER:
+  AUFTRAG_ID      CHAR 10  KEY  Auftrags-ID
+  ANGEBOT_ID      CHAR 10      Ursprungsangebot        → ZAH_ANGEBOT
+  KUNDE_ID        CHAR 10      Kunde                   → ZAH_KUNDE
+  MITARBEITER_ID  CHAR 10      Verkäufer               → ZAH_MITARBEITER
+  AUFTRAGSDATUM   DATS         Auftragsdatum
+  LIEFERTERMIN    DATS         Geplanter Liefertermin
+  STATUS          CHAR 10      Status (OFFEN/RESV/VKFT/AUSG)
+  NETTO           CURR 15,2     Nettobetrag
+  RABATT          CURR 15,2     Rabatt
+  MWST            CURR 15,2     Mehrwertsteuer
+  BRUTTO          CURR 15,2     Bruttobetrag
+  ANZAHLUNG       CURR 15,2     Anzahlung
+  WAEHRUNG        CUKY  5      Währung
+  BEMERKUNG       CHAR 255     Bemerkung
+  ERSTELLT_AM     DATS         Erstellungsdatum
+  ERSTELLT_VON    CHAR 12      Erstellt von
+
+*----------------------------------------------------------------------*
+* Tabelle: ZAH_AUFTRAG_POS (Positionen)
+*----------------------------------------------------------------------*
+TABNAME: ZAH_AUFTRAG_POS
+TABCLASS: TRANSP
+DDTEXT: Verkaufsauftrag Positionen
+
+FELDER:
+  AUFTRAG_ID    CHAR 10  KEY  Auftrags-ID             → ZAH_AUFTRAG
+  POS_NR        NUMC  4  KEY  Positionsnummer
+  FAHRZEUG_ID   CHAR 10      Fahrzeug                → ZAH_FAHRZEUG
+  BESCHREIBUNG  CHAR 80      Beschreibung
+  VERKAUFSPREIS CURR 15,2     Verkaufspreis
+  RABATT        CURR 15,2     Rabatt
+  NETTO         CURR 15,2     Netto

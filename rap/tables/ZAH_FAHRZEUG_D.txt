@@ -1,0 +1,17 @@
+*----------------------------------------------------------------------*
+* Draft-Tabelle für RAP Draft-Handling (Fahrzeug)
+* Anlegen in SE11 vor Aktivierung der Behavior Definition
+*----------------------------------------------------------------------*
+TABNAME: ZAH_FAHRZEUG_D
+TABCLASS: TRANSP
+DDTEXT: Fahrzeug Draft-Tabelle
+
+FELDER:
+  (identisch mit ZAH_FAHRZEUG, plus:)
+  DRAFTUUID           RAW 16   KEY  Draft UUID
+  DRAFTENTITYCREATEDBY  CHAR 12      Draft erstellt von
+  DRAFTENTITYLASTCHANGEDBY CHAR 12   Draft geändert von
+  DRAFTENTITYCREATIONDATETIME  DEC 21  Draft erstellt am
+  DRAFTENTITYLASTCHANGEDDATETIME DEC 21 Draft geändert am
+  HASACTIVEENTITY     CHAR 1        Hat aktive Entität
+  DRAFTENTITYOPERATION CHAR 1       Draft Operation

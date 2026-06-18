@@ -1,0 +1,37 @@
+*----------------------------------------------------------------------*
+* Tabelle: ZAH_EINKAUF (Kopf)
+* Einkaufsaufträge für Fahrzeugbeschaffung
+*----------------------------------------------------------------------*
+TABNAME: ZAH_EINKAUF
+TABCLASS: TRANSP
+DDTEXT: Einkaufsaufträge Autohaus HESSEN
+
+FELDER:
+  EINKAUF_ID      CHAR 10  KEY  Einkaufs-ID
+  LIEFERANT_ID    CHAR 10      Lieferant               → ZAH_LIEFERANT
+  BESTELLDATUM    DATS         Bestelldatum
+  LIEFERTERMIN    DATS         Erwarteter Liefertermin
+  STATUS          CHAR 10      Status (OFFEN/BESTAND/STORNO)
+  GESAMTPREIS     CURR 15,2     Gesamt-Einkaufspreis
+  WAEHRUNG        CUKY  5      Währung (EUR)
+  BEMERKUNG       CHAR 255     Bemerkung
+  ERSTELLT_AM     DATS         Erstellungsdatum
+  ERSTELLT_VON    CHAR 12      Erstellt von
+
+*----------------------------------------------------------------------*
+* Tabelle: ZAH_EINKAUF_POS (Positionen)
+*----------------------------------------------------------------------*
+TABNAME: ZAH_EINKAUF_POS
+TABCLASS: TRANSP
+DDTEXT: Einkaufsauftrag Positionen
+
+FELDER:
+  EINKAUF_ID    CHAR 10  KEY  Einkaufs-ID             → ZAH_EINKAUF
+  POS_NR        NUMC  4  KEY  Positionsnummer
+  MARKE_ID      CHAR  4      Marke                   → ZAH_MARKE
+  MODELL        CHAR 40      Modell
+  ANZAHL        INT4         Anzahl Fahrzeuge
+  EINZELPREIS   CURR 15,2     Einkaufspreis pro Stück
+  GESAMTPREIS   CURR 15,2     Positionsgesamtpreis
+  GELIEFERT     INT4         Bereits gelieferte Anzahl
+  BEMERKUNG     CHAR 100     Bemerkung

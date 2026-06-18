@@ -1,0 +1,82 @@
+{
+  "xsappname": "autohaus-hessen-sap",
+  "tenant-mode": "dedicated",
+  "description": "Autohaus HESSEN Rollen und Zugriffsschutz",
+  "oauth2-configuration": {
+    "redirect-uris": [
+      "https://autohaus-hessen-approuter.cfapps.us10-001.hana.ondemand.com/login/callback",
+      "https://*.cfapps.us10-001.hana.ondemand.com/login/callback"
+    ]
+  },
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.Admin",
+      "description": "Vollzugriff auf alle Bereiche"
+    },
+    {
+      "name": "$XSAPPNAME.Owner",
+      "description": "Geschaeftsfuehrung und Management"
+    },
+    {
+      "name": "$XSAPPNAME.Employee",
+      "description": "Operative Mitarbeiteransicht"
+    },
+    {
+      "name": "$XSAPPNAME.Sales",
+      "description": "Verkauf, Kunden, Fahrzeuge, Angebote"
+    },
+    {
+      "name": "$XSAPPNAME.Finance",
+      "description": "Rechnungen, Zahlungen, Mahnungen"
+    },
+    {
+      "name": "$XSAPPNAME.HR",
+      "description": "Personal und Lohnabrechnungen"
+    }
+  ],
+  "role-templates": [
+    {
+      "name": "AH_Admin",
+      "description": "Autohaus HESSEN Admin",
+      "scope-references": [
+        "$XSAPPNAME.Admin",
+        "$XSAPPNAME.Owner",
+        "$XSAPPNAME.Employee",
+        "$XSAPPNAME.Sales",
+        "$XSAPPNAME.Finance",
+        "$XSAPPNAME.HR"
+      ]
+    },
+    {
+      "name": "AH_Chef",
+      "description": "Autohaus HESSEN Chef",
+      "scope-references": [
+        "$XSAPPNAME.Owner",
+        "$XSAPPNAME.Sales",
+        "$XSAPPNAME.Finance"
+      ]
+    },
+    {
+      "name": "AH_Mitarbeiter",
+      "description": "Autohaus HESSEN Mitarbeiter",
+      "scope-references": [
+        "$XSAPPNAME.Employee",
+        "$XSAPPNAME.Sales"
+      ]
+    },
+    {
+      "name": "AH_Finanzen",
+      "description": "Autohaus HESSEN Finanzen",
+      "scope-references": [
+        "$XSAPPNAME.Finance"
+      ]
+    },
+    {
+      "name": "AH_Personal",
+      "description": "Autohaus HESSEN Personal",
+      "scope-references": [
+        "$XSAPPNAME.HR"
+      ]
+    }
+  ]
+}

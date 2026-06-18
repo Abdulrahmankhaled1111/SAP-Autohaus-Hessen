@@ -1,0 +1,60 @@
+*----------------------------------------------------------------------*
+* Tabelle: ZAH_RECHNUNG (Kopf)
+* Rechnungen
+*----------------------------------------------------------------------*
+TABNAME: ZAH_RECHNUNG
+TABCLASS: TRANSP
+DDTEXT: Rechnungen Autohaus HESSEN
+
+FELDER:
+  RECHNUNG_ID     CHAR 10  KEY  Rechnungs-ID
+  AUFTRAG_ID      CHAR 10      Verkaufsauftrag         → ZAH_AUFTRAG
+  KUNDE_ID        CHAR 10      Kunde                   → ZAH_KUNDE
+  RECHNUNGSDATUM  DATS         Rechnungsdatum
+  FAELLIGKEIT     DATS         Fälligkeitsdatum
+  STATUS          CHAR 10      Status (OFFEN/TEIL/BEZAHLT)
+  NETTO           CURR 15,2     Nettobetrag
+  MWST_SATZ       DEC  5,2      MwSt-Satz (19.00)
+  MWST            CURR 15,2     Mehrwertsteuer
+  BRUTTO          CURR 15,2     Bruttobetrag
+  BEZAHLT         CURR 15,2     Bereits bezahlt
+  OFFEN           CURR 15,2     Offener Betrag
+  WAEHRUNG        CUKY  5      Währung
+  BEMERKUNG       CHAR 255     Bemerkung
+  ERSTELLT_AM     DATS         Erstellungsdatum
+  ERSTELLT_VON    CHAR 12      Erstellt von
+
+*----------------------------------------------------------------------*
+* Tabelle: ZAH_RECHNUNG_POS (Positionen)
+*----------------------------------------------------------------------*
+TABNAME: ZAH_RECHNUNG_POS
+TABCLASS: TRANSP
+DDTEXT: Rechnung Positionen
+
+FELDER:
+  RECHNUNG_ID   CHAR 10  KEY  Rechnungs-ID             → ZAH_RECHNUNG
+  POS_NR        NUMC  4  KEY  Positionsnummer
+  FAHRZEUG_ID   CHAR 10      Fahrzeug                → ZAH_FAHRZEUG
+  BESCHREIBUNG  CHAR 80      Beschreibung
+  MENGE         INT4         Menge (meist 1)
+  EINZELPREIS   CURR 15,2     Einzelpreis netto
+  NETTO         CURR 15,2     Positionsnetto
+
+*----------------------------------------------------------------------*
+* Tabelle: ZAH_ZAHLUNG
+* Zahlungseingänge
+*----------------------------------------------------------------------*
+TABNAME: ZAH_ZAHLUNG
+TABCLASS: TRANSP
+DDTEXT: Zahlungen Autohaus HESSEN
+
+FELDER:
+  ZAHLUNG_ID    CHAR 10  KEY  Zahlungs-ID
+  RECHNUNG_ID   CHAR 10      Rechnung                → ZAH_RECHNUNG
+  ZAHLUNGSDATUM DATS         Zahlungsdatum
+  BETRAG        CURR 15,2     Zahlungsbetrag
+  ZAHLUNGSART   CHAR 10      Zahlungsart (UEBERWEISUNG/BAR/KARTE)
+  REFERENZ      CHAR 30      Referenz / Verwendungszweck
+  BEMERKUNG     CHAR 100     Bemerkung
+  ERSTELLT_AM   DATS         Erstellungsdatum
+  ERSTELLT_VON  CHAR 12      Erstellt von

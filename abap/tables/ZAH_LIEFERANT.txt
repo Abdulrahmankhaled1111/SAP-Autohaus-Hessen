@@ -1,0 +1,23 @@
+*----------------------------------------------------------------------*
+* Tabelle: ZAH_LIEFERANT
+* Lieferanten / Hersteller / Großhändler
+*----------------------------------------------------------------------*
+TABNAME: ZAH_LIEFERANT
+TABCLASS: TRANSP
+DDTEXT: Lieferanten Autohaus HESSEN
+
+FELDER:
+  LIEFERANT_ID  CHAR 10  KEY  Lieferanten-ID
+  NAME          CHAR 60      Firmenname
+  NAME2         CHAR 60      Name 2
+  STRASSE       CHAR 60      Straße
+  PLZ           CHAR 10      Postleitzahl
+  ORT           CHAR 40      Ort
+  LAND          CHAR  3      Land (DEU)
+  TELEFON       CHAR 20      Telefon
+  EMAIL         CHAR 60      E-Mail
+  STEUERNR      CHAR 20      Steuernummer
+  ZAHLBED       CHAR  4      Zahlungsbedingung
+  AKTIV         CHAR  1      Aktiv (X = Ja)
+  ERSTellt_AM   DATS         Erstellungsdatum
+  ERSTELLT_VON  CHAR 12      Erstellt von (User)

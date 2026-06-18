@@ -1,0 +1,82 @@
+*----------------------------------------------------------------------*
+* Domäne: ZAH_D_STATUS
+* Fahrzeug- und Belegstatus
+* Anlegen in SE11 → Domäne
+*----------------------------------------------------------------------*
+DOMAIN: ZAH_D_STATUS
+  DATATYPE: CHAR
+  LENGTH: 10
+  LOWERCASE: X
+  VALUE TABLE: (keine)
+
+  Festwerte:
+    BEST      Bestellt
+    BESTAND   Im Bestand
+    RESV      Reserviert
+    VKFT      Verkauft
+    AUSG      Ausgeliefert
+    WS        Werkstatt
+    OFFEN     Offen
+    ANGEN     Angenommen
+    ABGL      Abgelehnt
+    BEZAHLT   Bezahlt
+    TEIL      Teilbezahlt
+    STORNO    Storniert
+
+*----------------------------------------------------------------------*
+* Domäne: ZAH_D_KUNDENTYP
+*----------------------------------------------------------------------*
+DOMAIN: ZAH_D_KUNDENTYP
+  DATATYPE: CHAR
+  LENGTH: 1
+
+  Festwerte:
+    P    Privatkunde
+    G    Gewerbekunde
+
+*----------------------------------------------------------------------*
+* Domäne: ZAH_D_ANREDE
+*----------------------------------------------------------------------*
+DOMAIN: ZAH_D_ANREDE
+  DATATYPE: CHAR
+  LENGTH: 10
+
+  Festwerte:
+    Herr
+    Frau
+    Firma
+
+*----------------------------------------------------------------------*
+* Domäne: ZAH_D_KRAFTSTOFF
+*----------------------------------------------------------------------*
+DOMAIN: ZAH_D_KRAFTSTOFF
+  DATATYPE: CHAR
+  LENGTH: 10
+
+  Festwerte:
+    Benzin
+    Diesel
+    Elektro
+    Hybrid
+    Gas
+
+*----------------------------------------------------------------------*
+* Domäne: ZAH_D_WAEHRUNG
+*----------------------------------------------------------------------*
+DOMAIN: ZAH_D_WAEHRUNG
+  DATATYPE: CUKY
+  LENGTH: 5
+  CONVERSION ROUTINE: (Standard EUR)
+
+*----------------------------------------------------------------------*
+* Datenelemente (SE11 → Datenelement)
+*----------------------------------------------------------------------*
+ZAH_DE_STATUS       Bezeichnung: Status          Domäne: ZAH_D_STATUS
+ZAH_DE_KUNDENTYP    Bezeichnung: Kundentyp       Domäne: ZAH_D_KUNDENTYP
+ZAH_DE_ANREDE       Bezeichnung: Anrede          Domäne: ZAH_D_ANREDE
+ZAH_DE_KRAFTSTOFF   Bezeichnung: Kraftstoff      Domäne: ZAH_D_KRAFTSTOFF
+ZAH_DE_WAEHRUNG     Bezeichnung: Währung         Domäne: ZAH_D_WAEHRUNG
+ZAH_DE_FAHRZEUG_ID  Bezeichnung: Fahrzeug-ID     Domäne: CHAR10
+ZAH_DE_KUNDE_ID     Bezeichnung: Kunden-ID       Domäne: CHAR10
+ZAH_DE_FIN          Bezeichnung: Fahrzeug-Ident-Nr.  Domäne: CHAR17
+ZAH_DE_PREIS        Bezeichnung: Preis           Domäne: CURR 15,2

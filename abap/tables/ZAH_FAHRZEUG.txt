@@ -1,0 +1,42 @@
+*----------------------------------------------------------------------*
+* Tabelle: ZAH_FAHRZEUG
+* Zentrale Fahrzeugstammdaten – jedes einzelne Fahrzeug
+*----------------------------------------------------------------------*
+TABNAME: ZAH_FAHRZEUG
+TABCLASS: TRANSP
+DDTEXT: Fahrzeuge Autohaus HESSEN
+
+FELDER:
+  FAHRZEUG_ID     CHAR 10  KEY  Fahrzeug-ID
+  FIN             CHAR 17  KEY  Fahrzeug-Identifikationsnummer (VIN)
+  MARKE_ID        CHAR  4      Marke                   → ZAH_MARKE
+  MODELL          CHAR 40      Modellbezeichnung
+  BAUJAHR         NUMC  4      Baujahr
+  FARBE           CHAR 20      Farbe
+  KM_STAND        INT4         Kilometerstand
+  KRAFTSTOFF      CHAR 10      Kraftstoffart           → ZAH_DE_KRAFTSTOFF
+  GETRIEBE        CHAR 10      Getriebe (Manuell/Automatik)
+  LEISTUNG_KW     INT4         Leistung in kW
+  HUBRAUM         INT4         Hubraum in ccm
+  TUEV_BIS        DATS         TÜV gültig bis
+  EINKAUFSPREIS   CURR 15,2     Einkaufspreis
+  VERKAUFSPREIS   CURR 15,2     Verkaufspreis (Listenpreis)
+  STATUS          CHAR 10      Status                  → ZAH_DE_STATUS
+  EINKAUF_ID      CHAR 10      Einkaufsauftrag         → ZAH_EINKAUF
+  LIEFERANT_ID    CHAR 10      Lieferant               → ZAH_LIEFERANT
+  EINGANGSDATUM   DATS         Eingangsdatum Bestand
+  AUSLIEFERDAT    DATS         Auslieferungsdatum
+  KENNZEICHEN     CHAR 15      Kennzeichen (falls vorhanden)
+  BEMERKUNG       CHAR 255     Bemerkung / Ausstattung
+  ERSTELLT_AM     DATS         Erstellungsdatum
+  ERSTELLT_VON    CHAR 12      Erstellt von
+  GEANDERT_AM     DATS         Änderungsdatum
+  GEANDERT_VON    CHAR 12      Geändert von
+
+FREMDSCHLÜSSEL:
+  MARKE_ID     → ZAH_MARKE.MARKE_ID
+  EINKAUF_ID   → ZAH_EINKAUF.EINKAUF_ID
+  LIEFERANT_ID → ZAH_LIEFERANT.LIEFERANT_ID
+
+TECHNISCH:
+  Sekundärindex auf STATUS, MARKE_ID

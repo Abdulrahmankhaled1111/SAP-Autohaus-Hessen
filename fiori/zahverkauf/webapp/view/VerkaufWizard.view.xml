@@ -1,0 +1,119 @@
+<mvc:View
+    controllerName="de.autohaushessen.zahverkauf.controller.VerkaufWizard"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+    displayBlock="true">
+    <Page title="Verkaufsprozess" showNavButton="false">
+        <content>
+            <Wizard id="verkaufWizard" complete=".onWizardComplete" enableBranching="false">
+                <!-- Schritt 1: Kunde wählen -->
+                <WizardStep title="Kunde" validated=".onKundeValidated" icon="sap-icon://person-placeholder">
+                    <VBox class="sapUiSmallMargin">
+                        <SearchField placeholder="Kunde suchen..." search=".onKundeSearch" width="100%" />
+                        <Table id="kundeSelectTable"
+                            items="{ path: '/Kunde', length: 10 }"
+                            mode="SingleSelectLeft"
+                            selectionChange=".onKundeSelected">
+                            <columns>
+                                <Column><Text text="Name" /></Column>
+                                <Column><Text text="Ort" /></Column>
+                                <Column><Text text="Telefon" /></Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <Text text="{Vorname} {Nachname}" />
+                                        <Text text="{Ort}" />
+                                        <Text text="{Telefon}" />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </VBox>
+                </WizardStep>
+
+                <!-- Schritt 2: Fahrzeug wählen -->
+                <WizardStep title="Fahrzeug" validated=".onFahrzeugValidated" icon="sap-icon://car-rental">
+                    <VBox class="sapUiSmallMargin">
+                        <MessageStrip text="Nur Fahrzeuge mit Status 'Im Bestand' werden angezeigt"
+                            type="Information" showIcon="true" class="sapUiSmallMarginBottom" />
+                        <Table id="fahrzeugSelectTable"
+                            items="{
+                                path: '/Fahrzeug',
+                                parameters: { $expand: '_Marke' },
+                                filters: [{ path: 'Status', operator: 'EQ', value1: 'BESTAND' }]
+                            }"
+                            mode="SingleSelectLeft"
+                            selectionChange=".onFahrzeugSelected">
+                            <columns>
+                                <Column><Text text="Marke / Modell" /></Column>
+                                <Column><Text text="FIN" /></Column>
+                                <Column><Text text="Farbe" /></Column>
+                                <Column hAlign="End"><Text text="Verkaufspreis" /></Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <Text text="{_Marke/Bezeichnung} {Modell}" />
+                                        <Text text="{Fin}" />
+                                        <Text text="{Farbe}" />
+                                        <ObjectNumber number="{Verkaufspreis}" unit="EUR" />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </VBox>
+                </WizardStep>
+
+                <!-- Schritt 3: Auftrag erstellen -->
+                <WizardStep title="Auftrag" validated="true" icon="sap-icon://sales-order">
+                    <VBox class="sapUiSmallMargin">
+                        <f:SimpleForm editable="true" layout="ResponsiveGridLayout">
+                            <f:content>
+                                <Label text="Kunde" />
+                                <Text text="{wizard>/kunde/name}" />
+                                <Label text="Fahrzeug" />
+                                <Text text="{wizard>/fahrzeug/bezeichnung}" />
+                                <Label text="Verkaufspreis" />
+                                <Input value="{wizard>/fahrzeug/preis}" type="Number" />
+                                <Label text="Rabatt (EUR)" />
+                                <Input value="{wizard>/rabatt}" type="Number" />
+                                <Label text="Anzahlung (EUR)" />
+                                <Input value="{wizard>/anzahlung}" type="Number" />
+                                <Label text="Bemerkung" />
+                                <TextArea value="{wizard>/bemerkung}" rows="3" width="100%" />
+                            </f:content>
+                        </f:SimpleForm>
+                    </VBox>
+                </WizardStep>
+
+                <!-- Schritt 4: Bestätigung -->
+                <WizardStep title="Bestätigung" validated="true" icon="sap-icon://accept">
+                    <VBox class="sapUiSmallMargin">
+                        <Panel headerText="Auftragsübersicht">
+                            <VBox class="sapUiSmallMargin">
+                                <Label text="Kunde:" design="Bold" />
+                                <Text text="{wizard>/kunde/name}" class="sapUiSmallMarginBottom" />
+                                <Label text="Fahrzeug:" design="Bold" />
+                                <Text text="{wizard>/fahrzeug/bezeichnung}" class="sapUiSmallMarginBottom" />
+                                <Label text="Verkaufspreis:" design="Bold" />
+                                <ObjectNumber number="{wizard>/fahrzeug/preis}" unit="EUR" emphasized="true" />
+                            </VBox>
+                        </Panel>
+                        <MessageStrip text="Mit 'Abschließen' wird der Auftrag erstellt und das Fahrzeug reserviert."
+                            type="Success" showIcon="true" class="sapUiMediumMarginTop" />
+                    </VBox>
+                </WizardStep>
+            </Wizard>
+        </content>
+        <footer>
+            <OverflowToolbar>
+                <ToolbarSpacer />
+                <Button text="Auftrag erstellen" type="Emphasized" press=".onCreateAuftrag"
+                    enabled="{= ${wizard>/kunde} !== null &amp;&amp; ${wizard>/fahrzeug} !== null}" />
+            </OverflowToolbar>
+        </footer>
+    </Page>
+</mvc:View>

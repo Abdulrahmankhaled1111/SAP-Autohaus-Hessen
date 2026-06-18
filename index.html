@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Autohaus HESSEN - SAP Launchpad</title>
+  <link rel="stylesheet" href="assets/launchpad.css?v=20260618-fiori-launchpad">
+</head>
+<body>
+  <div class="launchpad-shell">
+    <header class="launchpad-bar">
+      <div class="brand-block">
+        <div class="brand-mark">AH</div>
+        <div>
+          <div class="brand-title">Autohaus HESSEN</div>
+          <div class="brand-subtitle">SAP Fiori Launchpad</div>
+        </div>
+      </div>
+      <div class="shell-actions">
+        <span class="status-pill" id="systemStatus">Systemprüfung</span>
+        <span class="user-pill" id="currentUser">SAP Benutzer</span>
+        <a class="shell-button" href="/logout">Abmelden</a>
+      </div>
+    </header>
+
+    <main class="launchpad-content">
+      <section class="workspace-head">
+        <div>
+          <p class="eyebrow">Autohaus HESSEN ERP</p>
+          <h1>Arbeitsplatz</h1>
+        </div>
+        <div class="search-wrap">
+          <input id="tileSearch" type="search" placeholder="App suchen">
+        </div>
+      </section>
+
+      <section class="group-section" aria-labelledby="grp-management">
+        <div class="group-head">
+          <h2 id="grp-management">Management</h2>
+          <span>Chef, Admin, Controlling</span>
+        </div>
+        <div class="tile-grid">
+          <a class="fiori-tile accent-blue" href="app.html?app=dashboard#dashboard" data-title="dashboard chef cockpit management kpi">
+            <span class="tile-icon">DB</span>
+            <strong>Dashboard</strong>
+            <small>Unternehmensüberblick</small>
+          </a>
+          <a class="fiori-tile accent-steel" href="app.html?app=audit#audit" data-title="sicherheit audit protokoll admin">
+            <span class="tile-icon">SI</span>
+            <strong>Sicherheit</strong>
+            <small>Audit & Protokolle</small>
+          </a>
+        </div>
+      </section>
+
+      <section class="group-section" aria-labelledby="grp-sales">
+        <div class="group-head">
+          <h2 id="grp-sales">Verkauf & Bestand</h2>
+          <span>Fahrzeuge, Kunden, Verkauf</span>
+        </div>
+        <div class="tile-grid">
+          <a class="fiori-tile accent-teal" href="app.html?workspace=salesInventory&app=vehicles#vehicles" data-title="fahrzeuge bestand auto fahrzeugakte">
+            <span class="tile-icon">FZ</span>
+            <strong>Fahrzeuge</strong>
+            <small>Bestand & Fahrzeugakte</small>
+          </a>
+          <a class="fiori-tile accent-green" href="app.html?workspace=salesInventory&app=customers#customers" data-title="kunden kundenakte kontakt crm">
+            <span class="tile-icon">KD</span>
+            <strong>Kunden</strong>
+            <small>Kundenakte & Kontakt</small>
+          </a>
+          <a class="fiori-tile accent-gold" href="app.html?workspace=salesInventory&app=sales#sales" data-title="verkauf angebot anfrage auftrag">
+            <span class="tile-icon">VK</span>
+            <strong>Verkauf</strong>
+            <small>Anfragen & Aufträge</small>
+          </a>
+        </div>
+      </section>
+
+      <section class="group-section" aria-labelledby="grp-backoffice">
+        <div class="group-head">
+          <h2 id="grp-backoffice">Backoffice</h2>
+          <span>Finanzen, Dokumente, Personal</span>
+        </div>
+        <div class="tile-grid">
+          <a class="fiori-tile accent-red" href="app.html?workspace=backoffice&app=finance#finance" data-title="finanzen rechnung zahlung mahnung">
+            <span class="tile-icon">FI</span>
+            <strong>Finanzen</strong>
+            <small>Rechnungen & Zahlungen</small>
+          </a>
+          <a class="fiori-tile accent-violet" href="app.html?workspace=backoffice&app=documents#documents" data-title="dokumente archiv pdf vertrag">
+            <span class="tile-icon">DO</span>
+            <strong>Dokumente</strong>
+            <small>Archiv & Druck</small>
+          </a>
+          <a class="fiori-tile accent-cyan" href="app.html?workspace=backoffice&app=hr#hr" data-title="personal mitarbeiter lohnabrechnung">
+            <span class="tile-icon">HR</span>
+            <strong>Personal</strong>
+            <small>Mitarbeiter & Lohn</small>
+          </a>
+        </div>
+      </section>
+
+      <section class="group-section" aria-labelledby="grp-workflow">
+        <div class="group-head">
+          <h2 id="grp-workflow">Zusammenarbeit</h2>
+          <span>Aufgaben, Tickets, Briefe</span>
+        </div>
+        <div class="tile-grid">
+          <a class="fiori-tile accent-blue" href="app.html?workspace=workflow&app=tasks#tasks" data-title="aufgaben termine kalender">
+            <span class="tile-icon">TK</span>
+            <strong>Aufgaben</strong>
+            <small>Kalender & Termine</small>
+          </a>
+          <a class="fiori-tile accent-orange" href="app.html?workspace=workflow&app=tickets#tickets" data-title="tickets service aufgaben workflow">
+            <span class="tile-icon">TS</span>
+            <strong>Tickets</strong>
+            <small>Arbeitssteuerung</small>
+          </a>
+          <a class="fiori-tile accent-green" href="app.html?workspace=workflow&app=correspondence#correspondence" data-title="briefe versand korrespondenz">
+            <span class="tile-icon">BR</span>
+            <strong>Briefe</strong>
+            <small>Korrespondenz</small>
+          </a>
+        </div>
+      </section>
+
+      <section class="system-strip" aria-label="Systemarchitektur">
+        <div><strong>SAP BTP</strong><span>Cloud Foundry</span></div>
+        <div><strong>AppRouter</strong><span>XSUAA geschützt</span></div>
+        <div><strong>ERP API</strong><span>Node Backend</span></div>
+        <div><strong>SAP HANA Cloud</strong><span>14 ERP Tabellen</span></div>
+      </section>
+    </main>
+  </div>
+  <script src="assets/launchpad.js?v=20260618-fiori-launchpad"></script>
+</body>
+</html>

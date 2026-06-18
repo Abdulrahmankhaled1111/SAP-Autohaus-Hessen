@@ -1,0 +1,7 @@
+<mvc:View
+    controllerName="de.autohaushessen.zahfahrzeug.controller.App"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    displayBlock="true">
+    <App id="app" />
+</mvc:View>
