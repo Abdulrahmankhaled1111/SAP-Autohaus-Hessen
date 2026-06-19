@@ -27,6 +27,14 @@
       <div class="shell-actions">
         <span class="status-pill" id="systemStatus">Systemprüfung</span>
         <span class="user-pill" id="currentUser">SAP Benutzer</span>
+        <button class="session-button" id="sessionSecurity" type="button" aria-label="Sitzung verlängern" title="Sitzung verlängern">
+          <span class="session-fill" id="sessionProgress" aria-hidden="true"></span>
+          <span class="session-content">
+            <span class="session-lock" aria-hidden="true">○</span>
+            <span class="session-label" id="sessionStateLabel">Sitzung</span>
+            <strong id="sessionCountdown">10:00</strong>
+          </span>
+        </button>
         <a class="shell-button" href="/logout">Abmelden</a>
       </div>
     </header>
@@ -142,6 +150,7 @@
     </main>
   </div>
   <script src="assets/launchpad.js?v=20260618-fiori-launchpad"></script>
+  <script src="assets/session.js?v=20260619-session-launchpad"></script>
   <script src="assets/pwa.js?v=20260619-pwa"></script>
 </body>
 </html>

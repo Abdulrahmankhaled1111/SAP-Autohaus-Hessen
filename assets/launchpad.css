@@ -110,6 +110,77 @@ body {
   background: rgba(196, 127, 0, 0.28);
 }
 
+.session-button {
+  position: relative;
+  width: 178px;
+  min-height: 36px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--ink);
+  padding: 0;
+  cursor: pointer;
+  box-shadow: 0 7px 18px rgba(0, 0, 0, 0.14);
+}
+
+.session-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 100%;
+  background: #d8dee6;
+  transition: width 0.4s ease, background 0.2s ease;
+}
+
+.session-content {
+  position: relative;
+  z-index: 1;
+  min-height: 36px;
+  display: grid;
+  grid-template-columns: 18px 1fr auto;
+  align-items: center;
+  gap: 7px;
+  padding: 0 11px;
+}
+
+.session-lock {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(24, 34, 48, 0.72);
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: transparent;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.session-label {
+  font-size: 12px;
+  font-weight: 800;
+  text-align: left;
+}
+
+.session-button strong {
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.session-button.warning {
+  border-color: #f3b457;
+}
+
+.session-button.warning .session-fill {
+  background: #f6d29c;
+}
+
+.session-button.danger {
+  border-color: #f1b8b3;
+}
+
+.session-button.danger .session-fill {
+  background: #f7c4bf;
+}
+
 .launchpad-content {
   width: min(1220px, calc(100% - 32px));
   margin: 0 auto;
@@ -309,6 +380,10 @@ h2 {
   .shell-actions,
   .search-wrap,
   .search-wrap input {
+    width: 100%;
+  }
+
+  .session-button {
     width: 100%;
   }
 

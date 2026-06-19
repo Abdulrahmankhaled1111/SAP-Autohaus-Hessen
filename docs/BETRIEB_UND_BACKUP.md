@@ -18,6 +18,8 @@ Die App meldet Benutzer nach **10 Minuten ohne Aktivität** automatisch ab.
 
 Als Aktivität zählen Mausbewegung, Klick, Tastatur, Touch und Scrollen. In der Cloud wird danach die SAP/BTP-Sitzung über den AppRouter beendet und der Benutzer muss sich neu anmelden.
 
+Der sichtbare Sitzungsbutton sitzt oben im **SAP Fiori Launchpad**. Dort wird die Restzeit als `MM:SS` angezeigt. Grau zeigt die verbleibende Sitzungszeit, Weiß zeigt den bereits abgelaufenen Teil. Ein Klick auf den Button verlängert die Sitzung wieder auf 10 Minuten.
+
 Für den produktiven Alltag kann der Wert später angepasst werden:
 
 - 5 Minuten: sinnvoll für sensible Bereiche wie Personal oder Finanzen.

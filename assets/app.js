@@ -12,11 +12,6 @@
   var operationsSummary = null;
   var operationsLoading = false;
   var operationsLoadedAt = 0;
-  var INACTIVITY_TIMEOUT_MS = 10 * 60 * 1000;
-  var INACTIVITY_WARNING_MS = 9 * 60 * 1000;
-  var lastActivityAt = Date.now();
-  var inactivityWarningShown = false;
-  var autoLogoutStarted = false;
 
   var roles = {
     admin: {
@@ -120,7 +115,6 @@
   document.addEventListener("DOMContentLoaded", function () {
     bindNavigation();
     bindForms();
-    bindSessionSecurity();
     window.addEventListener("hashchange", applyHashView);
     window.setInterval(applyHashView, 250);
     byId("roleSelect").value = state.session.role;
@@ -323,10 +317,6 @@
     });
 
     byId("exportData").addEventListener("click", exportData);
-    byId("sessionSecurity").addEventListener("click", function () {
-      recordActivity();
-      toast("Sitzung wurde verlängert.");
-    });
     byId("refreshOperations").addEventListener("click", function () {
       loadOperationsSummary(true);
     });
@@ -352,66 +342,6 @@
     byId("printDocumentList").addEventListener("click", function () {
       printDocument("overview");
     });
-  }
-
-  function bindSessionSecurity() {
-    ["mousemove", "mousedown", "keydown", "touchstart", "scroll"].forEach(function (eventName) {
-      window.addEventListener(eventName, recordActivity, { passive: true });
-    });
-    document.addEventListener("visibilitychange", function () {
-      if (!document.hidden) checkInactivity();
-    });
-    window.setInterval(checkInactivity, 1000);
-    updateSessionSecurityText();
-  }
-
-  function recordActivity() {
-    if (autoLogoutStarted) return;
-    lastActivityAt = Date.now();
-    inactivityWarningShown = false;
-    updateSessionSecurityText();
-  }
-
-  function checkInactivity() {
-    if (autoLogoutStarted) return;
-    var inactiveFor = Date.now() - lastActivityAt;
-    if (inactiveFor >= INACTIVITY_TIMEOUT_MS) {
-      autoLogoutStarted = true;
-      updateSessionSecurityText("logout");
-      saveState("Automatische Abmeldung", "Sitzung wurde nach 10 Minuten Inaktivität beendet.");
-      logoutUser(true);
-      return;
-    }
-    if (inactiveFor >= INACTIVITY_WARNING_MS && !inactivityWarningShown) {
-      inactivityWarningShown = true;
-      updateSessionSecurityText("warning");
-      toast("Sicherheitsabmeldung in Kürze wegen Inaktivität.");
-      return;
-    }
-    updateSessionSecurityText();
-  }
-
-  function updateSessionSecurityText(mode) {
-    var card = byId("sessionSecurity");
-    var label = byId("sessionStateLabel");
-    var countdown = byId("sessionCountdown");
-    var progress = byId("sessionProgress");
-    if (!card || !label || !countdown || !progress) return;
-    var remaining = Math.max(0, Math.ceil((INACTIVITY_TIMEOUT_MS - (Date.now() - lastActivityAt)) / 1000));
-    var percent = Math.max(0, Math.min(100, (remaining / (INACTIVITY_TIMEOUT_MS / 1000)) * 100));
-    var warning = mode === "warning" || remaining <= 60;
-    var logout = mode === "logout";
-    card.classList.toggle("warning", warning && !logout);
-    card.classList.toggle("danger", logout);
-    label.textContent = logout ? "Abmeldung" : warning ? "läuft ab" : "Sitzung";
-    countdown.textContent = formatDuration(remaining);
-    progress.style.width = percent + "%";
-  }
-
-  function formatDuration(seconds) {
-    var minutes = Math.floor(seconds / 60);
-    var rest = seconds % 60;
-    return String(minutes).padStart(2, "0") + ":" + String(rest).padStart(2, "0");
   }
 
   function bindForms() {
