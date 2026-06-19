@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Autohaus HESSEN">
+  <rect width="64" height="64" rx="14" fill="#0f6ab4"/>
+  <path d="M15 40h34l-4-11c-.8-2.3-2.9-3.9-5.3-3.9H24.3c-2.4 0-4.5 1.6-5.3 3.9L15 40Z" fill="#fff"/>
+  <path d="M23 25l3.5-7h11L41 25" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="24" cy="42" r="4" fill="#0b4f87"/>
+  <circle cx="40" cy="42" r="4" fill="#0b4f87"/>
+  <path d="M18 51h28" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+</svg>

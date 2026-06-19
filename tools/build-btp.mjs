@@ -13,6 +13,9 @@ await rm(approuterResources, { recursive: true, force: true });
 const entries = [
   "app.html",
   "index.html",
+  "manifest.webmanifest",
+  "service-worker.js",
+  "offline.html",
   "assets",
   "fiori",
   "docs"
