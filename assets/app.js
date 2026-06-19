@@ -855,10 +855,13 @@
   function renderOperationsPanel() {
     var summary = operationsSummary || localOperationsSummary();
     var backend = enterpriseBackend === "api" ? "ERP-API aktiv" : "Browser-Speicher";
-    var database = summary.database === "connected" || summary.database === "verbunden" ? "SAP HANA verbunden" : summary.storage || "Lokal";
+    var database = summary.database === "connected" || summary.database === "verbunden" ? "SAP HANA verbunden" :
+      summary.database === "degraded" ? "HANA nicht erreichbar" : summary.storage || "Lokal";
+    var tableStatus = summary.database === "degraded" ? "Verbindung prüfen" :
+      summary.tableCount ? summary.tableCount + " Tabellen" : "Lokaler Modus";
     setText("opsBackendStatus", backend);
     setText("opsDatabaseStatus", database);
-    setText("opsTableStatus", summary.tableCount ? summary.tableCount + " Tabellen" : "Lokaler Modus");
+    setText("opsTableStatus", tableStatus);
     setText("opsAuditStatus", String(summary.counts && summary.counts.audit ? summary.counts.audit : state.audit.length));
     setText("opsLastSync", operationsText(summary));
     renderReadiness(summary.readiness || localReadiness());
