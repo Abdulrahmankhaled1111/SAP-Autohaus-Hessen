@@ -4,6 +4,7 @@
   document.addEventListener("DOMContentLoaded", function () {
     bindSearch();
     loadUser();
+    loadOverview();
     checkSystem();
   });
 
@@ -52,6 +53,22 @@
       });
   }
 
+  function loadOverview() {
+    fetch(apiUrl("/admin/summary"), { credentials: "include" })
+      .then(function (response) { return response.ok ? response.json() : Promise.reject(new Error("Zusammenfassung nicht erreichbar")); })
+      .then(function (summary) {
+        setOverviewValue("lpOpenInvoices", summary.finance && summary.finance.openInvoices);
+        setOverviewValue("lpOpenTasks", summary.workflow && summary.workflow.openTasks);
+        setOverviewValue("lpVehicles", summary.counts && summary.counts.vehicles);
+        setOverviewValue("lpTickets", summary.workflow && summary.workflow.openTickets);
+      })
+      .catch(function () {
+        ["lpOpenInvoices", "lpOpenTasks", "lpVehicles", "lpTickets"].forEach(function (id) {
+          setText(id, "-");
+        });
+      });
+  }
+
   function apiUrl(path) {
     if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
       return "http://localhost:4004/api" + path;
@@ -62,5 +79,14 @@
   function setText(id, value) {
     var element = document.getElementById(id);
     if (element) element.textContent = value;
+  }
+
+  function setOverviewValue(id, value) {
+    setText(id, formatNumber(value));
+  }
+
+  function formatNumber(value) {
+    var number = Number(value || 0);
+    return number.toLocaleString("de-DE");
   }
 }());

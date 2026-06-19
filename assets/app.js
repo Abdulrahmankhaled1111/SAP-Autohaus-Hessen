@@ -479,7 +479,40 @@
     renderRows("dashboardTaskTable", openTasks.slice(0, 6), function (t) {
       return [t.dueDate, t.title, t.area, statusBadge(t.status)];
     }, 4);
+    renderDashboardQuickActions(openInvoices, openTasks);
     renderDepartmentCockpit(openInvoices, revenue, inventoryValue, openTasks);
+  }
+
+  function renderDashboardQuickActions(openInvoices, openTasks) {
+    var container = byId("dashboardQuickActions");
+    if (!container) return;
+    var available = state.vehicles.filter(function (v) { return v.status === "Bestand"; }).length;
+    var openTickets = state.tickets.filter(function (ticket) { return ticket.status !== "Erledigt"; });
+    var payrollMonth = state.payrolls.filter(function (p) { return p.period === currentPayrollPeriod(); }).length;
+    var actions = [
+      { view: "vehicles", label: "Fahrzeug erfassen", detail: available + " Fahrzeuge verfügbar", badge: "Bestand" },
+      { view: "customers", label: "Kundenakte öffnen", detail: state.customers.length + " Kunden im System", badge: "CRM" },
+      { view: "finance", label: "Offene Posten prüfen", detail: openInvoices.length + " Rechnungen offen", badge: "Finanzen" },
+      { view: "tasks", label: "Aufgaben planen", detail: openTasks.length + " Aufgaben offen", badge: "Team" },
+      { view: "tickets", label: "Tickets steuern", detail: openTickets.length + " Tickets offen", badge: "Service" },
+      { view: "hr", label: "Lohnabrechnung", detail: payrollMonth + " Abrechnungen im Monat", badge: "Personal" }
+    ].filter(function (item) {
+      return canUseView(item.view);
+    });
+
+    container.innerHTML = actions.map(function (item) {
+      return '<button class="quick-action" type="button" data-quick-view="' + escapeHtml(item.view) + '">' +
+        '<span>' + escapeHtml(item.badge) + '</span>' +
+        '<strong>' + escapeHtml(item.label) + '</strong>' +
+        '<small>' + escapeHtml(item.detail) + '</small>' +
+        '</button>';
+    }).join("");
+
+    container.querySelectorAll("[data-quick-view]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        setView(button.getAttribute("data-quick-view"));
+      });
+    });
   }
 
   function renderDepartmentCockpit(openInvoices, revenue, inventoryValue, openTasks) {
