@@ -45,7 +45,13 @@
 
     <main class="main">
       <header class="topbar">
-        <h1 id="pageTitle">Dashboard</h1>
+        <div class="topbar-title">
+          <div class="history-controls" aria-label="Seitennavigation">
+            <button class="icon-btn" id="historyBack" type="button" aria-label="Zurück" title="Zurück">&larr;</button>
+            <button class="icon-btn" id="historyForward" type="button" aria-label="Vorwärts" title="Vorwärts">&rarr;</button>
+          </div>
+          <h1 id="pageTitle">Dashboard</h1>
+        </div>
         <div class="topbar-actions">
           <label class="role-picker role-picker-hidden" aria-hidden="true">Rolle
             <select id="roleSelect">
@@ -58,6 +64,7 @@
             </select>
           </label>
           <span class="user-chip" id="activeRole">Admin</span>
+          <span class="user-chip security-chip" id="sessionSecurity">Auto-Abmeldung: 1 Min.</span>
           <button class="btn" id="launchpadButton">Launchpad</button>
           <button class="btn" id="logoutButton">Abmelden</button>
           <button class="btn" id="exportData">Daten exportieren</button>

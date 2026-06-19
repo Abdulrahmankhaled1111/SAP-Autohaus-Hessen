@@ -12,6 +12,11 @@
   var operationsSummary = null;
   var operationsLoading = false;
   var operationsLoadedAt = 0;
+  var INACTIVITY_TIMEOUT_MS = 60 * 1000;
+  var INACTIVITY_WARNING_MS = 45 * 1000;
+  var lastActivityAt = Date.now();
+  var inactivityWarningShown = false;
+  var autoLogoutStarted = false;
 
   var roles = {
     admin: {
@@ -115,6 +120,7 @@
   document.addEventListener("DOMContentLoaded", function () {
     bindNavigation();
     bindForms();
+    bindSessionSecurity();
     window.addEventListener("hashchange", applyHashView);
     window.setInterval(applyHashView, 250);
     byId("roleSelect").value = state.session.role;
@@ -316,6 +322,12 @@
       toast("Rolle gewechselt: " + role().label);
     });
 
+    byId("historyBack").addEventListener("click", function () {
+      window.history.back();
+    });
+    byId("historyForward").addEventListener("click", function () {
+      window.history.forward();
+    });
     byId("exportData").addEventListener("click", exportData);
     byId("refreshOperations").addEventListener("click", function () {
       loadOperationsSummary(true);
@@ -342,6 +354,50 @@
     byId("printDocumentList").addEventListener("click", function () {
       printDocument("overview");
     });
+  }
+
+  function bindSessionSecurity() {
+    ["mousemove", "mousedown", "keydown", "touchstart", "scroll"].forEach(function (eventName) {
+      window.addEventListener(eventName, recordActivity, { passive: true });
+    });
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) checkInactivity();
+    });
+    window.setInterval(checkInactivity, 1000);
+    updateSessionSecurityText();
+  }
+
+  function recordActivity() {
+    if (autoLogoutStarted) return;
+    lastActivityAt = Date.now();
+    inactivityWarningShown = false;
+    updateSessionSecurityText();
+  }
+
+  function checkInactivity() {
+    if (autoLogoutStarted) return;
+    var inactiveFor = Date.now() - lastActivityAt;
+    if (inactiveFor >= INACTIVITY_TIMEOUT_MS) {
+      autoLogoutStarted = true;
+      setText("sessionSecurity", "Sitzung wird abgemeldet");
+      saveState("Automatische Abmeldung", "Sitzung wurde nach 1 Minute Inaktivität beendet.");
+      logoutUser(true);
+      return;
+    }
+    if (inactiveFor >= INACTIVITY_WARNING_MS && !inactivityWarningShown) {
+      inactivityWarningShown = true;
+      setText("sessionSecurity", "Abmeldung in Kürze");
+      toast("Sicherheitsabmeldung in Kürze wegen Inaktivität.");
+      return;
+    }
+    updateSessionSecurityText();
+  }
+
+  function updateSessionSecurityText() {
+    var el = byId("sessionSecurity");
+    if (!el) return;
+    var remaining = Math.max(0, Math.ceil((INACTIVITY_TIMEOUT_MS - (Date.now() - lastActivityAt)) / 1000));
+    el.textContent = "Auto-Abmeldung: " + remaining + "s";
   }
 
   function bindForms() {
@@ -2236,8 +2292,8 @@
     render();
   }
 
-  function logoutUser() {
-    saveState("Abmeldung", "Benutzer hat Abmelden gewählt.");
+  function logoutUser(skipAudit) {
+    if (!skipAudit) saveState("Abmeldung", "Benutzer hat Abmelden gewählt.");
     if (window.location.hostname.indexOf("hana.ondemand.com") > -1) {
       window.location.href = "/logout";
       return;
