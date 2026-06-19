@@ -162,83 +162,75 @@ textarea {
   display: none;
 }
 
-.session-card {
-  width: 190px;
+.session-button {
+  position: relative;
+  width: 176px;
+  min-height: 40px;
+  overflow: hidden;
   border: 1px solid #c8d0da;
-  border-radius: 8px;
+  border-radius: 999px;
   background: white;
-  padding: 8px 10px;
+  color: var(--ink);
+  padding: 0;
+  cursor: pointer;
   box-shadow: var(--shadow-soft);
 }
 
-.session-card-top {
-  display: grid;
-  grid-template-columns: 9px 1fr auto;
-  align-items: center;
-  gap: 8px;
+.session-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 100%;
+  background: #d8dee6;
+  transition: width 0.4s ease, background 0.2s ease;
 }
 
-.session-dot {
-  width: 9px;
-  height: 9px;
+.session-content {
+  position: relative;
+  z-index: 1;
+  min-height: 40px;
+  display: grid;
+  grid-template-columns: 18px 1fr auto;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+}
+
+.session-lock {
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(31, 42, 55, 0.3);
   border-radius: 999px;
-  background: var(--good);
-  box-shadow: 0 0 0 4px rgba(19, 115, 51, 0.12);
+  display: grid;
+  place-items: center;
+  color: transparent;
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .session-label {
-  color: var(--muted);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 750;
+  text-align: left;
 }
 
-.session-card strong {
+.session-button strong {
   font-size: 13px;
+  font-variant-numeric: tabular-nums;
 }
 
-.session-progress {
-  height: 4px;
-  margin-top: 7px;
-  border-radius: 999px;
-  background: #edf2f7;
-  overflow: hidden;
+.session-button.warning {
+  border-color: #e9a23b;
 }
 
-.session-progress span {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--good);
-  transition: width 0.3s ease, background 0.2s ease;
+.session-button.warning .session-fill {
+  background: #f6d29c;
 }
 
-.session-card.warning {
-  border-color: #f0b15d;
-  background: #fffaf2;
-}
-
-.session-card.warning .session-dot,
-.session-card.warning .session-progress span {
-  background: var(--warn);
-}
-
-.session-card.warning .session-dot {
-  box-shadow: 0 0 0 4px rgba(161, 92, 0, 0.12);
-}
-
-.session-card.danger {
+.session-button.danger {
   border-color: #f1b8b3;
-  background: #fff8f7;
 }
 
-.session-card.danger .session-dot,
-.session-card.danger .session-progress span {
-  background: var(--bad);
-}
-
-.session-card.danger .session-dot {
-  box-shadow: 0 0 0 4px rgba(180, 35, 24, 0.12);
+.session-button.danger .session-fill {
+  background: #f7c4bf;
 }
 
 .content {
@@ -1023,7 +1015,7 @@ tr:hover td {
     width: 100%;
   }
 
-  .session-card {
+  .session-button {
     width: 100%;
   }
 

@@ -14,15 +14,15 @@ Wenn dort **ERP-API aktiv** und **SAP HANA verbunden** steht, arbeitet die App g
 
 ## Automatische Abmeldung
 
-Die App meldet Benutzer nach **1 Minute ohne Aktivität** automatisch ab.
+Die App meldet Benutzer nach **10 Minuten ohne Aktivität** automatisch ab.
 
 Als Aktivität zählen Mausbewegung, Klick, Tastatur, Touch und Scrollen. In der Cloud wird danach die SAP/BTP-Sitzung über den AppRouter beendet und der Benutzer muss sich neu anmelden.
 
 Für den produktiven Alltag kann der Wert später angepasst werden:
 
-- 1 Minute: sehr streng, gut für Tests oder gemeinsam genutzte Geräte.
 - 5 Minuten: sinnvoll für sensible Bereiche wie Personal oder Finanzen.
-- 10 bis 15 Minuten: oft angenehmer für normale Büroarbeit.
+- 10 Minuten: aktueller Standard für das Autohaus-System.
+- 15 Minuten: oft angenehmer für normale Büroarbeit.
 
 ## Backup herunterladen
 

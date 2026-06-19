@@ -58,14 +58,14 @@
             </select>
           </label>
           <span class="user-chip" id="activeRole">Admin</span>
-          <div class="session-card" id="sessionSecurity" role="status" aria-live="polite">
-            <div class="session-card-top">
-              <span class="session-dot" aria-hidden="true"></span>
-              <span class="session-label" id="sessionStateLabel">Sitzung aktiv</span>
-              <strong id="sessionCountdown">60s</strong>
-            </div>
-            <div class="session-progress" aria-hidden="true"><span id="sessionProgress"></span></div>
-          </div>
+          <button class="session-button" id="sessionSecurity" type="button" aria-label="Sitzung verlängern" title="Sitzung verlängern">
+            <span class="session-fill" id="sessionProgress" aria-hidden="true"></span>
+            <span class="session-content">
+              <span class="session-lock" aria-hidden="true">○</span>
+              <span class="session-label" id="sessionStateLabel">Sitzung</span>
+              <strong id="sessionCountdown">10:00</strong>
+            </span>
+          </button>
           <button class="btn" id="launchpadButton">Launchpad</button>
           <button class="btn" id="logoutButton">Abmelden</button>
           <button class="btn" id="exportData">Daten exportieren</button>

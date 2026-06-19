@@ -12,8 +12,8 @@
   var operationsSummary = null;
   var operationsLoading = false;
   var operationsLoadedAt = 0;
-  var INACTIVITY_TIMEOUT_MS = 60 * 1000;
-  var INACTIVITY_WARNING_MS = 45 * 1000;
+  var INACTIVITY_TIMEOUT_MS = 10 * 60 * 1000;
+  var INACTIVITY_WARNING_MS = 9 * 60 * 1000;
   var lastActivityAt = Date.now();
   var inactivityWarningShown = false;
   var autoLogoutStarted = false;
@@ -323,6 +323,10 @@
     });
 
     byId("exportData").addEventListener("click", exportData);
+    byId("sessionSecurity").addEventListener("click", function () {
+      recordActivity();
+      toast("Sitzung wurde verlängert.");
+    });
     byId("refreshOperations").addEventListener("click", function () {
       loadOperationsSummary(true);
     });
@@ -374,7 +378,7 @@
     if (inactiveFor >= INACTIVITY_TIMEOUT_MS) {
       autoLogoutStarted = true;
       updateSessionSecurityText("logout");
-      saveState("Automatische Abmeldung", "Sitzung wurde nach 1 Minute Inaktivität beendet.");
+      saveState("Automatische Abmeldung", "Sitzung wurde nach 10 Minuten Inaktivität beendet.");
       logoutUser(true);
       return;
     }
@@ -395,13 +399,19 @@
     if (!card || !label || !countdown || !progress) return;
     var remaining = Math.max(0, Math.ceil((INACTIVITY_TIMEOUT_MS - (Date.now() - lastActivityAt)) / 1000));
     var percent = Math.max(0, Math.min(100, (remaining / (INACTIVITY_TIMEOUT_MS / 1000)) * 100));
-    var warning = mode === "warning" || remaining <= 15;
+    var warning = mode === "warning" || remaining <= 60;
     var logout = mode === "logout";
     card.classList.toggle("warning", warning && !logout);
     card.classList.toggle("danger", logout);
-    label.textContent = logout ? "Abmeldung" : warning ? "Sitzung läuft ab" : "Sitzung aktiv";
-    countdown.textContent = remaining + "s";
+    label.textContent = logout ? "Abmeldung" : warning ? "läuft ab" : "Sitzung";
+    countdown.textContent = formatDuration(remaining);
     progress.style.width = percent + "%";
+  }
+
+  function formatDuration(seconds) {
+    var minutes = Math.floor(seconds / 60);
+    var rest = seconds % 60;
+    return String(minutes).padStart(2, "0") + ":" + String(rest).padStart(2, "0");
   }
 
   function bindForms() {
