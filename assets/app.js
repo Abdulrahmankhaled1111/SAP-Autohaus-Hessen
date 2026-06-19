@@ -322,12 +322,6 @@
       toast("Rolle gewechselt: " + role().label);
     });
 
-    byId("historyBack").addEventListener("click", function () {
-      window.history.back();
-    });
-    byId("historyForward").addEventListener("click", function () {
-      window.history.forward();
-    });
     byId("exportData").addEventListener("click", exportData);
     byId("refreshOperations").addEventListener("click", function () {
       loadOperationsSummary(true);
@@ -379,25 +373,35 @@
     var inactiveFor = Date.now() - lastActivityAt;
     if (inactiveFor >= INACTIVITY_TIMEOUT_MS) {
       autoLogoutStarted = true;
-      setText("sessionSecurity", "Sitzung wird abgemeldet");
+      updateSessionSecurityText("logout");
       saveState("Automatische Abmeldung", "Sitzung wurde nach 1 Minute Inaktivität beendet.");
       logoutUser(true);
       return;
     }
     if (inactiveFor >= INACTIVITY_WARNING_MS && !inactivityWarningShown) {
       inactivityWarningShown = true;
-      setText("sessionSecurity", "Abmeldung in Kürze");
+      updateSessionSecurityText("warning");
       toast("Sicherheitsabmeldung in Kürze wegen Inaktivität.");
       return;
     }
     updateSessionSecurityText();
   }
 
-  function updateSessionSecurityText() {
-    var el = byId("sessionSecurity");
-    if (!el) return;
+  function updateSessionSecurityText(mode) {
+    var card = byId("sessionSecurity");
+    var label = byId("sessionStateLabel");
+    var countdown = byId("sessionCountdown");
+    var progress = byId("sessionProgress");
+    if (!card || !label || !countdown || !progress) return;
     var remaining = Math.max(0, Math.ceil((INACTIVITY_TIMEOUT_MS - (Date.now() - lastActivityAt)) / 1000));
-    el.textContent = "Auto-Abmeldung: " + remaining + "s";
+    var percent = Math.max(0, Math.min(100, (remaining / (INACTIVITY_TIMEOUT_MS / 1000)) * 100));
+    var warning = mode === "warning" || remaining <= 15;
+    var logout = mode === "logout";
+    card.classList.toggle("warning", warning && !logout);
+    card.classList.toggle("danger", logout);
+    label.textContent = logout ? "Abmeldung" : warning ? "Sitzung läuft ab" : "Sitzung aktiv";
+    countdown.textContent = remaining + "s";
+    progress.style.width = percent + "%";
   }
 
   function bindForms() {
