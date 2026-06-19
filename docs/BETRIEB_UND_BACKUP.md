@@ -1,0 +1,39 @@
+# Betrieb und Datensicherung
+
+Diese Anwendung läuft als Autohaus-HESSEN-ERP auf SAP BTP mit AppRouter, Node-API und SAP HANA Cloud.
+
+## Systemstatus prüfen
+
+In der App:
+
+1. Öffne **Sicherheit**.
+2. Klicke auf **Status prüfen**.
+3. Prüfe die Felder **Backend**, **Datenbank**, **Tabellenmodell** und **Audit-Einträge**.
+
+Wenn dort **ERP-API aktiv** und **SAP HANA verbunden** steht, arbeitet die App gegen den zentralen SAP-BTP-Backend-Teil.
+
+## Backup herunterladen
+
+In der App:
+
+1. Öffne **Sicherheit**.
+2. Klicke auf **Backup herunterladen**.
+3. Lege die heruntergeladene JSON-Datei an einem sicheren Ort ab.
+
+Das Backup enthält den ERP-Datenbestand, aber keine SAP-Passwörter und keine Service-Keys.
+
+Empfehlung für den Betrieb:
+
+- Täglich ein Backup herunterladen, solange noch kein automatischer Backup-Prozess eingerichtet ist.
+- Zusätzlich monatlich ein Archivbackup ablegen.
+- Backup-Dateien nicht per WhatsApp oder privater E-Mail versenden.
+- Zugriff nur für Chef/Admin.
+
+## Was vor echtem Produktivbetrieb noch geprüft werden muss
+
+- BTP-Rollensammlungen für Admin, Chef, Verkauf, Finanzen, Personal und Mitarbeiter sauber zuweisen.
+- Datenschutz und Zugriffsrechte prüfen.
+- Automatisches HANA-Backup oder Export-Job einrichten.
+- Steuerberater/Lohnbüro für echte Lohnabrechnung und Steuerdaten einbinden.
+- Impressum, Aufbewahrungsfristen und Dokumentenarchiv rechtlich prüfen.
+

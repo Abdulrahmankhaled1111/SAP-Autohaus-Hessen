@@ -9,6 +9,9 @@
   var enterpriseBackend = "browser";
   var syncTimer = null;
   var appContext = readAppContext();
+  var operationsSummary = null;
+  var operationsLoading = false;
+  var operationsLoadedAt = 0;
 
   var roles = {
     admin: {
@@ -314,6 +317,10 @@
     });
 
     byId("exportData").addEventListener("click", exportData);
+    byId("refreshOperations").addEventListener("click", function () {
+      loadOperationsSummary(true);
+    });
+    byId("downloadBackup").addEventListener("click", downloadBackup);
     byId("launchpadButton").addEventListener("click", function () {
       window.location.href = "index.html";
     });
@@ -838,9 +845,166 @@
   }
 
   function renderAudit() {
+    renderOperationsPanel();
+    if (currentView === "audit") loadOperationsSummary(false);
     renderRows("auditTable", state.audit, function (a) {
       return [a.time, a.action, a.detail];
     }, 3);
+  }
+
+  function renderOperationsPanel() {
+    var summary = operationsSummary || localOperationsSummary();
+    var backend = enterpriseBackend === "api" ? "ERP-API aktiv" : "Browser-Speicher";
+    var database = summary.database === "connected" || summary.database === "verbunden" ? "SAP HANA verbunden" : summary.storage || "Lokal";
+    setText("opsBackendStatus", backend);
+    setText("opsDatabaseStatus", database);
+    setText("opsTableStatus", summary.tableCount ? summary.tableCount + " Tabellen" : "Lokaler Modus");
+    setText("opsAuditStatus", String(summary.counts && summary.counts.audit ? summary.counts.audit : state.audit.length));
+    setText("opsLastSync", operationsText(summary));
+    renderReadiness(summary.readiness || localReadiness());
+  }
+
+  function operationsText(summary) {
+    var counts = summary.counts || {};
+    var openInvoices = summary.finance ? summary.finance.openInvoices : state.invoices.filter(function (i) { return i.status !== "Bezahlt"; }).length;
+    var openTasks = summary.workflow ? summary.workflow.openTasks : state.tasks.filter(function (t) { return t.status !== "Erledigt"; }).length;
+    var parts = [
+      "Datenbestand: " + Number(counts.customers || state.customers.length).toLocaleString("de-DE") + " Kunden",
+      Number(counts.vehicles || state.vehicles.length).toLocaleString("de-DE") + " Fahrzeuge",
+      openInvoices + " offene Rechnungen",
+      openTasks + " offene Aufgaben"
+    ];
+    if (summary.time) parts.push("Stand: " + new Date(summary.time).toLocaleString("de-DE"));
+    return parts.join(" · ");
+  }
+
+  function localOperationsSummary() {
+    var openInvoices = state.invoices.filter(function (i) { return i.status !== "Bezahlt"; });
+    var openTasks = state.tasks.filter(function (t) { return t.status !== "Erledigt"; });
+    var openTickets = state.tickets.filter(function (t) { return t.status !== "Erledigt"; });
+    return {
+      storage: enterpriseBackend === "api" ? "ERP-API" : "Browser-Speicher",
+      database: enterpriseBackend === "api" ? "connected" : "local",
+      tableCount: enterpriseBackend === "api" ? 14 : 0,
+      time: new Date().toISOString(),
+      counts: {
+        vehicles: state.vehicles.length,
+        customers: state.customers.length,
+        invoices: state.invoices.length,
+        employees: state.employees.length,
+        tasks: state.tasks.length,
+        tickets: state.tickets.length,
+        audit: state.audit.length
+      },
+      finance: { openInvoices: openInvoices.length },
+      workflow: { openTasks: openTasks.length, openTickets: openTickets.length },
+      readiness: localReadiness()
+    };
+  }
+
+  function localReadiness() {
+    return [
+      { label: "SAP/BTP Login", status: enterpriseBackend === "api" ? "good" : "warn", text: enterpriseBackend === "api" ? "Benutzer läuft über die Cloud-App." : "Lokal oder Browser-Modus aktiv." },
+      { label: "SAP HANA Cloud", status: enterpriseBackend === "api" ? "good" : "warn", text: enterpriseBackend === "api" ? "Zentrale API ist aktiv." : "Noch nicht mit der API verbunden." },
+      { label: "Datensicherung", status: "warn", text: "Backup über Admin-Knopf herunterladen und extern ablegen." }
+    ];
+  }
+
+  function loadOperationsSummary(force) {
+    var url = enterpriseApiUrl("/admin/summary");
+    if (!url || !window.fetch) return;
+    if (!force && operationsLoadedAt && Date.now() - operationsLoadedAt < 30000) return;
+    if (operationsLoading) return;
+    operationsLoading = true;
+    fetch(url, { credentials: "include" })
+      .then(function (response) {
+        if (!response.ok) throw new Error("Betriebsstatus nicht verfügbar");
+        return response.json();
+      })
+      .then(function (summary) {
+        operationsSummary = summary;
+        operationsLoadedAt = Date.now();
+        renderOperationsPanel();
+        if (force) toast("Systemstatus wurde geprüft.");
+      })
+      .catch(function () {
+        operationsSummary = localOperationsSummary();
+        renderOperationsPanel();
+        if (force) toast("API-Status konnte nicht gelesen werden.");
+      })
+      .finally(function () {
+        operationsLoading = false;
+      });
+  }
+
+  function renderReadiness(items) {
+    var container = byId("readinessList");
+    if (!container) return;
+    container.textContent = "";
+    items.forEach(function (item) {
+      var row = document.createElement("div");
+      var badge = document.createElement("span");
+      badge.className = "status " + (item.status || "warn");
+      badge.textContent = item.status === "good" ? "Bereit" : item.status === "bad" ? "Fehler" : "Prüfen";
+      var title = document.createElement("strong");
+      title.textContent = item.label;
+      var text = document.createElement("p");
+      text.textContent = item.text || "";
+      row.appendChild(badge);
+      row.appendChild(title);
+      row.appendChild(text);
+      container.appendChild(row);
+    });
+  }
+
+  function downloadBackup() {
+    if (!(role().admin || state.session.role === "owner")) return toast("Nur Admin oder Chef dürfen Backups erstellen.");
+    var url = enterpriseApiUrl("/admin/backup");
+    if (enterpriseBackend === "api" && url && window.fetch) {
+      fetch(url, { credentials: "include" })
+        .then(function (response) {
+          if (!response.ok) throw new Error("Backup nicht verfügbar");
+          return response.json();
+        })
+        .then(function (backup) {
+          downloadJson(backup, "autohaus-hessen-backup-" + today() + ".json");
+          if (backup && backup.data) {
+            state = normalizeState(backup.data);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            operationsSummary = null;
+            render();
+          }
+          toast("Backup wurde heruntergeladen.");
+        })
+        .catch(function () {
+          toast("Backup über API nicht möglich. Lokaler Export wird erstellt.");
+          downloadLocalBackup();
+        });
+      return;
+    }
+    downloadLocalBackup();
+  }
+
+  function downloadLocalBackup() {
+    var backup = {
+      exportType: "AUTOHAUS_HESSEN_LOCAL_BACKUP",
+      exportedAt: new Date().toISOString(),
+      storage: enterpriseBackend,
+      data: state
+    };
+    downloadJson(backup, "autohaus-hessen-lokal-backup-" + today() + ".json");
+    saveState("Lokales Backup erstellt", "JSON-Backup wurde im Browser heruntergeladen.");
+    render();
+  }
+
+  function downloadJson(data, filename) {
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   function renderRows(tableId, rows, map, colCount) {

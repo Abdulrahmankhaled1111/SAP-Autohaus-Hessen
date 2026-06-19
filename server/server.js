@@ -369,9 +369,18 @@ function send(req, res, status, body) {
   res.writeHead(status, {
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store",
+    ...securityHeaders(),
     ...corsHeaders(req)
   });
   res.end(payload);
+}
+
+function securityHeaders() {
+  return {
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
+  };
 }
 
 function readBody(req) {
@@ -414,6 +423,23 @@ function userName(req) {
     return req.authUser.email || req.authUser.user_name || req.authUser.name || "SAP/BTP Benutzer";
   }
   return req.headers["x-forwarded-email"] || req.headers["x-forwarded-user"] || "SAP/BTP Benutzer";
+}
+
+function authScopes(req) {
+  const user = req.authUser || {};
+  const values = []
+    .concat(user.scope || [])
+    .concat(user.scopes || [])
+    .concat(user.authorities || []);
+  return values.filter(Boolean).map(value => String(value));
+}
+
+function canUseAdminEndpoint(req) {
+  if (process.env.NODE_ENV !== "production") return true;
+  if (process.env.REQUIRE_AUTH === "false") return true;
+  const scopes = authScopes(req).join(" ").toLowerCase();
+  if (!scopes) return true;
+  return [".admin", ".owner", ".chef"].some(scope => scopes.includes(scope));
 }
 
 function bearerToken(req) {
@@ -502,6 +528,102 @@ function audit(state, req, action, detail) {
   state.audit = state.audit.slice(0, 500);
 }
 
+function collectionCounts(state) {
+  return COLLECTION_ORDER.reduce((counts, collection) => {
+    counts[collection] = Array.isArray(state[collection]) ? state[collection].length : 0;
+    return counts;
+  }, {});
+}
+
+function businessSummary(state, storage, req) {
+  const counts = collectionCounts(state);
+  const openInvoices = state.invoices.filter(invoice => invoice.status !== "Bezahlt");
+  const openTasks = state.tasks.filter(task => task.status !== "Erledigt");
+  const openTickets = state.tickets.filter(ticket => ticket.status !== "Erledigt");
+  const inventoryValue = state.vehicles
+    .filter(vehicle => vehicle.status !== "Verkauft")
+    .reduce((sum, vehicle) => sum + Number(vehicle.price || 0), 0);
+  const paidRevenue = state.invoices.reduce((sum, invoice) => sum + Number(invoice.paid || 0), 0);
+  const openInvoiceAmount = openInvoices.reduce((sum, invoice) => {
+    return sum + Math.max(0, Number(invoice.gross || 0) - Number(invoice.paid || 0));
+  }, 0);
+  const scopes = authScopes(req);
+  return {
+    system: "Autohaus HESSEN ERP Core",
+    time: new Date().toISOString(),
+    user: userName(req),
+    roleSource: scopes.length ? "BTP-Rollensammlungen" : "BTP-Login ohne gelesene Scopes",
+    storage: storage.storage,
+    database: storage.connected ? "connected" : "degraded",
+    dataModel: storage.model || "local",
+    tableCount: storage.tables || 0,
+    tables: [SYSTEM_TABLE].concat(Object.values(COLLECTION_TABLES)),
+    counts,
+    finance: {
+      openInvoices: openInvoices.length,
+      openInvoiceAmount,
+      paidRevenue,
+      inventoryValue
+    },
+    workflow: {
+      openTasks: openTasks.length,
+      openTickets: openTickets.length
+    },
+    readiness: readinessItems(storage, counts, scopes)
+  };
+}
+
+function readinessItems(storage, counts, scopes) {
+  const hanaReady = storage.storage === "SAP HANA Cloud" && storage.connected;
+  return [
+    {
+      label: "SAP/BTP Login",
+      status: "good",
+      text: "Zugriff läuft über AppRouter und BTP-Anmeldung."
+    },
+    {
+      label: "SAP HANA Cloud",
+      status: hanaReady ? "good" : "warn",
+      text: hanaReady ? "Zentrale Datenbank ist verbunden." : "Datenbank prüfen oder Verbindung wiederherstellen."
+    },
+    {
+      label: "Normalisiertes Tabellenmodell",
+      status: storage.model === "normalized" ? "good" : "warn",
+      text: storage.model === "normalized" ? "ERP-Bereiche liegen in getrennten HANA-Tabellen." : "Lokaler Fallback oder altes Modell aktiv."
+    },
+    {
+      label: "BTP-Rollen",
+      status: scopes.length ? "good" : "warn",
+      text: scopes.length ? "Benutzerrechte werden aus BTP-Scopes gelesen." : "Rollensammlungen in BTP weiter pflegen."
+    },
+    {
+      label: "Audit-Protokoll",
+      status: counts.audit > 0 ? "good" : "warn",
+      text: counts.audit > 0 ? "Änderungen werden protokolliert." : "Noch keine Protokolleinträge vorhanden."
+    },
+    {
+      label: "Datensicherung",
+      status: "warn",
+      text: "Manueller Backup-Export ist verfügbar. Für Produktion zusätzlich automatische Sicherung planen."
+    }
+  ];
+}
+
+function backupPayload(state, storage, req) {
+  const data = normalizeState(JSON.parse(JSON.stringify(state)));
+  const checksum = crypto.createHash("sha256").update(JSON.stringify(data)).digest("hex");
+  return {
+    exportType: "AUTOHAUS_HESSEN_ERP_BACKUP",
+    version: data.version,
+    exportedAt: new Date().toISOString(),
+    exportedBy: userName(req),
+    storage: storage.storage,
+    dataModel: storage.model || "local",
+    checksum,
+    data
+  };
+}
+
 async function handleApi(req, res) {
   const url = new URL(req.url, "http://localhost");
   const parts = url.pathname.split("/").filter(Boolean);
@@ -535,6 +657,28 @@ async function handleApi(req, res) {
   }
 
   const state = await readState();
+
+  if (url.pathname === "/api/admin/summary" && req.method === "GET") {
+    if (!canUseAdminEndpoint(req)) {
+      send(req, res, 403, { error: "Nur Admin oder Chef dürfen den Systembetrieb einsehen." });
+      return;
+    }
+    const storage = await storageHealth();
+    send(req, res, 200, businessSummary(state, storage, req));
+    return;
+  }
+
+  if (url.pathname === "/api/admin/backup" && req.method === "GET") {
+    if (!canUseAdminEndpoint(req)) {
+      send(req, res, 403, { error: "Nur Admin oder Chef dürfen Backups erstellen." });
+      return;
+    }
+    audit(state, req, "Datensicherung erstellt", "Vollständiger ERP-Datenexport wurde heruntergeladen.");
+    const stored = await writeState(state);
+    const storage = await storageHealth();
+    send(req, res, 200, backupPayload(stored, storage, req));
+    return;
+  }
 
   if (url.pathname === "/api/state" && req.method === "GET") {
     send(req, res, 200, state);

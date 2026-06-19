@@ -472,6 +472,69 @@ textarea {
   align-items: start;
 }
 
+.operations-layout {
+  grid-template-columns: minmax(420px, 1fr) minmax(360px, 0.9fr);
+  margin-bottom: 18px;
+}
+
+.compact-toolbar {
+  justify-content: flex-end;
+}
+
+.ops-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.ops-item {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft);
+  padding: 12px;
+  min-height: 84px;
+}
+
+.ops-item span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.ops-item strong {
+  display: block;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.ops-note {
+  margin-top: 14px;
+}
+
+.readiness-list {
+  display: grid;
+  gap: 10px;
+}
+
+.readiness-list > div {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft);
+  padding: 12px;
+}
+
+.readiness-list strong {
+  display: block;
+  margin-top: 8px;
+}
+
+.readiness-list p {
+  color: var(--muted);
+  margin: 4px 0 0;
+}
+
 .panel {
   overflow: hidden;
   background: var(--surface);

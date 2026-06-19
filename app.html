@@ -504,6 +504,53 @@
         </section>
 
         <section class="view" id="view-audit">
+          <div class="grid-2 operations-layout">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">SAP-Systembetrieb</div>
+                <div class="toolbar compact-toolbar">
+                  <button class="btn" id="refreshOperations">Status prüfen</button>
+                  <button class="btn primary" id="downloadBackup">Backup herunterladen</button>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div class="ops-grid">
+                  <div class="ops-item">
+                    <span>Backend</span>
+                    <strong id="opsBackendStatus">Wird geprüft</strong>
+                  </div>
+                  <div class="ops-item">
+                    <span>Datenbank</span>
+                    <strong id="opsDatabaseStatus">Wird geprüft</strong>
+                  </div>
+                  <div class="ops-item">
+                    <span>Tabellenmodell</span>
+                    <strong id="opsTableStatus">-</strong>
+                  </div>
+                  <div class="ops-item">
+                    <span>Audit-Einträge</span>
+                    <strong id="opsAuditStatus">0</strong>
+                  </div>
+                </div>
+                <div class="notice-box ops-note">
+                  <strong>Firmenbetrieb</strong>
+                  <p id="opsLastSync">Das System prüft die Verbindung zur zentralen ERP-API.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Betriebsfreigabe</div></div>
+              <div class="panel-body">
+                <div class="readiness-list" id="readinessList">
+                  <div><span class="status warn">Prüfung</span><strong>SAP/BTP Login</strong><p>Benutzer werden über BTP angemeldet.</p></div>
+                  <div><span class="status warn">Prüfung</span><strong>HANA Cloud</strong><p>Datenhaltung wird geprüft.</p></div>
+                  <div><span class="status warn">Prüfung</span><strong>Datensicherung</strong><p>Backups können vom Admin heruntergeladen werden.</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="panel">
             <div class="panel-header"><div class="panel-title">Sicherheits- und Änderungsprotokoll</div></div>
             <div class="table-wrap">
