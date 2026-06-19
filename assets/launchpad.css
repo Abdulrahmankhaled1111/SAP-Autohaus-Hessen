@@ -111,9 +111,13 @@ body {
 }
 
 .session-button {
+  appearance: none;
+  -webkit-appearance: none;
   position: relative;
   width: 186px;
   min-height: 34px;
+  display: inline-flex;
+  align-items: stretch;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 999px;
@@ -144,6 +148,7 @@ body {
 .session-content {
   position: relative;
   z-index: 1;
+  width: 100%;
   min-height: 34px;
   display: grid;
   grid-template-columns: 18px 1fr auto;

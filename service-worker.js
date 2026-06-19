@@ -1,4 +1,4 @@
-const CACHE_NAME = "autohaus-hessen-pwa-v20260619";
+const CACHE_NAME = "autohaus-hessen-pwa-v20260620-session-button";
 
 const STATIC_ASSETS = [
   "/",
@@ -10,6 +10,7 @@ const STATIC_ASSETS = [
   "/assets/app.js",
   "/assets/launchpad.css",
   "/assets/launchpad.js",
+  "/assets/session.js",
   "/assets/pwa.js",
   "/assets/icons/favicon.svg",
   "/assets/icons/icon-192.png",
