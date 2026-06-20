@@ -1,4 +1,4 @@
-const CACHE_NAME = "autohaus-hessen-pwa-v20260620-ux-suite";
+const CACHE_NAME = "autohaus-hessen-pwa-v20260620-erp-ready";
 
 const STATIC_ASSETS = [
   "/",

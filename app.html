@@ -12,7 +12,7 @@
   <meta name="apple-mobile-web-app-title" content="Autohaus HESSEN">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="assets/app.css?v=20260620-ux-suite">
+  <link rel="stylesheet" href="assets/app.css?v=20260620-erp-ready">
 </head>
 <body>
   <div class="app-shell">
@@ -281,7 +281,7 @@
               </div>
               <div class="table-wrap">
                 <table id="invoiceTable">
-                  <thead><tr><th>Rechnung</th><th>Datum</th><th>Fällig</th><th>Kunde</th><th>Fahrzeug</th><th>Brutto</th><th>Bezahlt</th><th>Offen</th><th>Status</th><th>Versand</th><th>Aktion</th></tr></thead>
+                  <thead><tr><th>Rechnung</th><th>Datum</th><th>Fällig</th><th>Kunde</th><th>Fahrzeug</th><th>Brutto</th><th>Bezahlt</th><th>Offen</th><th>Mahnstufe</th><th>Status</th><th>Versand</th><th>Aktion</th></tr></thead>
                   <tbody></tbody>
                 </table>
               </div>
@@ -305,6 +305,18 @@
         </section>
 
         <section class="view" id="view-tasks">
+          <div class="workflow-guide">
+            <article>
+              <span>Aufgaben</span>
+              <strong>Kalender, Termine und persönliche To-dos</strong>
+              <p>Nutze Aufgaben für Rückrufe, Probefahrten, Wiedervorlagen und interne Erinnerungen mit Datum und Uhrzeit.</p>
+            </article>
+            <article>
+              <span>Tickets</span>
+              <strong>Verbindliche Arbeitsaufträge</strong>
+              <p>Wenn Verantwortung, Bearbeitungsstatus und Nachverfolgung wichtig sind, wird aus der Aufgabe ein Ticket.</p>
+            </article>
+          </div>
           <div class="grid-2">
             <div class="panel">
               <div class="panel-header"><div class="panel-title">Aufgabe oder Termin anlegen</div></div>
@@ -360,6 +372,18 @@
         </section>
 
         <section class="view" id="view-tickets">
+          <div class="workflow-guide">
+            <article>
+              <span>Ticket-System</span>
+              <strong>Wer macht was bis wann?</strong>
+              <p>Tickets sind die zentrale Arbeitssteuerung für Abteilungen: offen, in Arbeit, erledigt.</p>
+            </article>
+            <article>
+              <span>Professioneller Ablauf</span>
+              <strong>Verantwortlich, Kunde, Fahrzeug und Priorität</strong>
+              <p>So sieht jeder Mitarbeiter sofort, welcher Vorgang ihm gehört und was als Nächstes passieren muss.</p>
+            </article>
+          </div>
           <div class="grid-2">
             <div class="panel">
               <div class="panel-header"><div class="panel-title">Ticket anlegen</div></div>
@@ -573,9 +597,9 @@
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div id="sideSheet" class="side-sheet-backdrop" hidden></div>
-  <script src="assets/app.js?v=20260620-ux-suite"></script>
-  <script src="assets/session.js?v=20260620-ux-suite"></script>
-  <script src="assets/pwa.js?v=20260620-ux-suite"></script>
+  <script src="assets/app.js?v=20260620-erp-ready"></script>
+  <script src="assets/session.js?v=20260620-erp-ready"></script>
+  <script src="assets/pwa.js?v=20260620-erp-ready"></script>
 </body>
 </html>
 

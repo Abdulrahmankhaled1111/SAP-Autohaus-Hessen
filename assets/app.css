@@ -476,6 +476,45 @@ textarea {
   line-height: 1.55;
 }
 
+.workflow-guide {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.workflow-guide article {
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+  padding: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+.workflow-guide article:nth-child(2) {
+  border-left-color: var(--teal);
+}
+
+.workflow-guide span {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.workflow-guide strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 16px;
+}
+
+.workflow-guide p {
+  margin: 7px 0 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
 .ticket-board {
   display: grid;
   grid-template-columns: repeat(3, minmax(190px, 1fr));
@@ -1004,6 +1043,7 @@ tbody tr:last-child td {
   .dashboard-grid,
   .quick-action-panel,
   .quick-actions,
+  .workflow-guide,
   .department-grid,
   .calendar-board,
   .ticket-board {

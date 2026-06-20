@@ -158,6 +158,9 @@
     });
     old.reminders = (old.reminders || []).map(function (m) {
       m.sentAt = m.sentAt || "";
+      m.level = Number(m.level || 1);
+      m.dueDate = m.dueDate || addDays(7);
+      m.status = m.status && m.status !== "Erstellt" ? m.status : reminderLevelLabel(m.level);
       return m;
     });
     old.payrolls = (old.payrolls || []).map(function (p) {
@@ -200,7 +203,7 @@
     data.employees = (data.employees || []).map(normalizeEmployee);
     data.requests = data.requests || [];
     data.invoices = data.invoices || [];
-    data.reminders = data.reminders || [];
+    data.reminders = (data.reminders || []).map(normalizeReminder);
     data.letters = data.letters || [];
     data.notes = data.notes || [];
     data.audit = data.audit || [];
@@ -214,6 +217,14 @@
     task.area = task.area || "Verkauf";
     task.status = task.status || "Offen";
     return task;
+  }
+
+  function normalizeReminder(reminder) {
+    reminder.level = Number(reminder.level || 1);
+    reminder.dueDate = reminder.dueDate || addDays(reminder.level === 1 ? 7 : reminder.level === 2 ? 5 : 3);
+    reminder.status = reminder.status && reminder.status !== "Erstellt" ? reminder.status : reminderLevelLabel(reminder.level);
+    reminder.sentAt = reminder.sentAt || "";
+    return reminder;
   }
 
   function normalizeTicket(ticket) {
@@ -641,7 +652,7 @@
         { html: actions([
           ["Bearbeiten", "editRequest", r.id, "", role().edit],
           ["Drucken", "printRequest", r.id, "", role().print],
-          ["Senden", "sendRequest", r.id, "", role().print]
+          ["E-Mail", "sendRequest", r.id, "", role().print]
         ]) }
       ];
     }, 8);
@@ -660,16 +671,17 @@
         moneyCell(i.gross),
         moneyCell(i.paid),
         moneyCell(Math.max(0, i.gross - i.paid)),
+        reminderStatusCell(i),
         statusBadge(i.status),
         i.sentAt ? "Gesendet " + i.sentAt : "Entwurf",
         { html: actions([
           ["Bearbeiten", "editInvoice", i.id, "", role().finance],
           ["Rechnung", "printInvoice", i.id, "", role().print],
-          ["Senden", "sendInvoice", i.id, "", role().print],
-          ["Mahnung", "createReminder", i.id, "danger", role().finance && i.status !== "Bezahlt"]
+          ["E-Mail", "sendInvoice", i.id, "", role().print],
+          [nextReminderActionLabel(i), "createReminder", i.id, "danger", role().finance && i.status !== "Bezahlt" && nextReminderLevel(i.id) <= 3]
         ]) }
       ];
-    }, 11);
+    }, 12);
   }
 
   function renderDocuments() {
@@ -685,10 +697,20 @@
         d.sentAt ? "Gesendet " + d.sentAt : "Entwurf",
         { html: actions([
           ["Drucken", "printDoc", d.docKey, "", role().print],
-          ["Senden", "sendDoc", d.docKey, "", role().print]
+          ["E-Mail", "sendDoc", d.docKey, "", role().print]
         ]) }
       ];
     }, 8);
+  }
+
+  function reminderStatusCell(invoice) {
+    var currentLevel = lastReminderLevel(invoice.id);
+    return currentLevel ? statusBadge(reminderLevelLabel(currentLevel)) : { html: '<span class="status info">Keine</span>' };
+  }
+
+  function nextReminderActionLabel(invoice) {
+    var level = nextReminderLevel(invoice.id);
+    return level <= 3 ? level + ". Mahnung" : "Mahnstopp";
   }
 
   function renderTasks() {
@@ -708,6 +730,7 @@
         statusBadge(t.status),
         { html: actions([
           ["Erledigt", "completeTask", t.id, "", role().edit && t.status !== "Erledigt"],
+          ["Als Ticket", "taskToTicket", t.id, "", role().edit && t.status !== "Erledigt"],
           ["Öffnen", "openTask", t.id, "", role().print],
           ["Löschen", "deleteTask", t.id, "danger", role().del]
         ]) }
@@ -1331,6 +1354,7 @@
     if (action === "printVehicleContract") return printDocument("vehicleContract", id);
     if (action === "createPayroll") return createPayroll(id);
     if (action === "completeTask") return completeTask(id);
+    if (action === "taskToTicket") return createTicketFromTask(id);
     if (action === "openTask") return openTask(id);
     if (action === "startTicket") return startTicket(id);
     if (action === "completeTicket") return completeTicket(id);
@@ -1373,6 +1397,33 @@
       ["Status", task.status],
       ["Notiz", task.note || "-"]
     ]);
+  }
+
+  function createTicketFromTask(id) {
+    if (!role().edit) return toast("Keine Bearbeitungsrechte.");
+    var task = findById(state.tasks, id);
+    if (!task) return;
+    var ticket = {
+      id: nextId("TS", state.tickets),
+      createdAt: today(),
+      dueDate: task.dueDate || "",
+      area: task.area || "Verkauf",
+      priority: task.priority || "Normal",
+      title: task.title,
+      ownerId: "",
+      ownerName: "",
+      customerId: task.customerId || "",
+      customerName: task.customerName || "",
+      vehicleId: task.vehicleId || "",
+      vehicleName: task.vehicleName || "",
+      description: task.note || "Aus Aufgabe " + task.id + " erstellt.",
+      status: "Offen"
+    };
+    state.tickets.unshift(ticket);
+    task.status = "Erledigt";
+    saveState("Aufgabe in Ticket umgewandelt", task.id + " -> " + ticket.id);
+    render();
+    toast("Ticket " + ticket.id + " wurde aus der Aufgabe erstellt.");
   }
 
   function startTicket(id) {
@@ -1691,21 +1742,68 @@
     ]);
   }
 
+  function lastReminderLevel(invoiceId) {
+    return state.reminders.filter(function (reminder) {
+      return reminder.invoiceId === invoiceId;
+    }).reduce(function (max, reminder) {
+      return Math.max(max, Number(reminder.level || 1));
+    }, 0);
+  }
+
+  function nextReminderLevel(invoiceId) {
+    return lastReminderLevel(invoiceId) + 1;
+  }
+
+  function reminderLevelLabel(level) {
+    level = Number(level || 1);
+    return level + ". Mahnung";
+  }
+
+  function reminderText(reminder) {
+    var level = Number(reminder && reminder.level || 1);
+    if (level === 1) {
+      return {
+        print: "Bei der Durchsicht unserer offenen Posten ist uns aufgefallen, dass die unten genannte Rechnung noch nicht vollständig ausgeglichen wurde. Bitte begleichen Sie den offenen Betrag bis zum genannten Zahlungsziel.",
+        email: "bei der Durchsicht unserer Unterlagen ist uns aufgefallen, dass die unten genannte Rechnung noch offen ist. Bitte begleichen Sie den Betrag bis zum angegebenen Zahlungsziel.",
+        followup: "Freundliche Zahlungserinnerung ohne zusätzliche Eskalation."
+      };
+    }
+    if (level === 2) {
+      return {
+        print: "Trotz vorheriger Erinnerung ist zu der unten genannten Rechnung weiterhin ein Betrag offen. Wir bitten Sie, den offenen Betrag kurzfristig zu begleichen oder sich bei Rückfragen direkt mit unserer Finanzabteilung in Verbindung zu setzen.",
+        email: "trotz vorheriger Erinnerung ist zu der unten genannten Rechnung weiterhin ein Betrag offen. Bitte begleichen Sie den Betrag kurzfristig oder kontaktieren Sie unsere Finanzabteilung.",
+        followup: "Zweite Mahnstufe mit verkürzter Zahlungsfrist."
+      };
+    }
+    return {
+      print: "Dies ist die dritte und letzte Mahnung zu der unten genannten Rechnung. Sollte der offene Betrag nicht fristgerecht eingehen, behalten wir uns weitere kaufmännische und rechtliche Schritte vor.",
+      email: "dies ist die dritte und letzte Mahnung zu der unten genannten Rechnung. Bitte gleichen Sie den offenen Betrag fristgerecht aus, um weitere Schritte zu vermeiden.",
+      followup: "Letzte Mahnstufe vor weiterer kaufmännischer Prüfung."
+    };
+  }
+
   function createReminder(invoiceId) {
     if (!role().finance) return toast("Keine Berechtigung für Mahnungen.");
     var invoice = findById(state.invoices, invoiceId);
     if (!invoice || invoice.status === "Bezahlt") return toast("Diese Rechnung ist bereits bezahlt.");
+    var level = nextReminderLevel(invoice.id);
+    if (level > 3) return toast("Für diese Rechnung wurde bereits die 3. Mahnung erstellt.");
+    var dueDate = addDays(level === 1 ? 7 : level === 2 ? 5 : 3);
     var reminder = {
       id: nextId("MH", state.reminders),
       invoiceId: invoice.id,
+      level: level,
       date: today(),
+      dueDate: dueDate,
       customerName: invoice.customerName,
       amount: Math.max(0, invoice.gross - invoice.paid),
-      status: "Erstellt",
+      status: reminderLevelLabel(level),
       sentAt: ""
     };
+    invoice.reminderLevel = level;
+    invoice.reminderDate = today();
     state.reminders.unshift(reminder);
-    saveState("Mahnung erstellt", reminder.id + " zu " + invoice.id);
+    saveState(reminderLevelLabel(level) + " erstellt", reminder.id + " zu " + invoice.id);
     render();
     printDocument("reminder", reminder.id);
   }
@@ -1810,7 +1908,7 @@
         return { docKey: "invoice:" + i.id, date: i.date, type: "Rechnung", id: i.id, customerName: i.customerName, amount: i.gross, status: i.status, sentAt: i.sentAt };
       }))
       .concat(state.reminders.map(function (m) {
-        return { docKey: "reminder:" + m.id, date: m.date, type: "Mahnung", id: m.id, customerName: m.customerName, amount: m.amount, status: m.status, sentAt: m.sentAt };
+        return { docKey: "reminder:" + m.id, date: m.date, type: reminderLevelLabel(m.level), id: m.id, customerName: m.customerName, amount: m.amount, status: m.status, sentAt: m.sentAt };
       }))
       .concat(state.payrolls.map(function (p) {
         return { docKey: "payroll:" + p.id, date: p.date, type: "Lohnabrechnung", id: p.id, customerName: p.employeeName, amount: p.net, status: p.status, sentAt: p.sentAt };
@@ -1834,11 +1932,11 @@
   function printDocument(type, id) {
     if (!canPrintDocument(type)) return toast("Diese Rolle darf dieses Dokument nicht drucken.");
     var html = buildDocumentHtml(type, id);
-    openPrintPreview(html);
+    openPrintPreview(html, type, id);
     saveState("Dokument geöffnet", type + (id ? " " + id : ""));
   }
 
-  function openPrintPreview(html) {
+  function openPrintPreview(html, type, id) {
     closePrintPreview();
     var overlay = document.createElement("div");
     overlay.className = "modal-backdrop print-backdrop";
@@ -1867,8 +1965,16 @@
     var cancel = document.createElement("button");
     cancel.className = "btn";
     cancel.type = "button";
-    cancel.textContent = "Schliessen";
+    cancel.textContent = "Schließen";
     cancel.addEventListener("click", closePrintPreview);
+    var send = document.createElement("button");
+    send.className = "btn";
+    send.type = "button";
+    send.textContent = "E-Mail vorbereiten";
+    send.hidden = !canSendDocument(type);
+    send.addEventListener("click", function () {
+      sendDocument(type, id);
+    });
     var print = document.createElement("button");
     print.className = "btn primary";
     print.type = "button";
@@ -1877,6 +1983,7 @@
       if (frame.contentWindow) frame.contentWindow.print();
     });
     actions.appendChild(cancel);
+    actions.appendChild(send);
     actions.appendChild(print);
     modal.appendChild(header);
     modal.appendChild(frame);
@@ -1892,6 +1999,7 @@
 
   function sendDocument(type, id) {
     if (!canPrintDocument(type)) return toast("Diese Rolle darf dieses Dokument nicht versenden.");
+    if (!canSendDocument(type)) return toast("Für dieses Dokument ist kein E-Mail-Versand vorgesehen.");
     var doc = getDocumentRecord(type, id);
     if (!doc.record) return toast("Dokument wurde nicht gefunden.");
     var customer = doc.customer || findCustomerByName(doc.record.customerName);
@@ -1908,6 +2016,10 @@
 
   function canPrintDocument(type) {
     return role().print || type === "overview" || (type === "payroll" && (role().admin || state.session.role === "hr"));
+  }
+
+  function canSendDocument(type) {
+    return ["invoice", "request", "reminder", "letter", "payroll"].indexOf(type) > -1;
   }
 
   function getDocumentRecord(type, id) {
@@ -1931,11 +2043,13 @@
     }
     if (type === "reminder") {
       var reminder = findById(state.reminders, id);
+      var reminderInvoice = findById(state.invoices, reminder && reminder.invoiceId);
+      var reminderTone = reminderText(reminder);
       return {
         record: reminder,
         customer: findCustomerByName(reminder && reminder.customerName),
-        subject: reminder ? "Mahnung " + reminder.id + " zu Rechnung " + reminder.invoiceId : "",
-        body: reminder ? "Sehr geehrte Damen und Herren,\n\nzu Rechnung " + reminder.invoiceId + " ist aktuell ein Betrag von " + formatMoney(reminder.amount) + " offen. Bitte prüfen Sie den Vorgang und veranlassen Sie die Zahlung zeitnah.\n\nMit freundlichen Grüßen\nAutohaus HESSEN GmbH" : ""
+        subject: reminder ? reminderLevelLabel(reminder.level) + " " + reminder.id + " zu Rechnung " + reminder.invoiceId : "",
+        body: reminder ? "Sehr geehrte Damen und Herren,\n\n" + reminderTone.email + "\n\nRechnung: " + reminder.invoiceId + "\nFahrzeug: " + (reminderInvoice ? reminderInvoice.vehicleName : "-") + "\nOffener Betrag: " + formatMoney(reminder.amount) + "\nZahlbar bis: " + reminder.dueDate + "\n\nSollte die Zahlung bereits erfolgt sein, betrachten Sie dieses Schreiben bitte als gegenstandslos.\n\nMit freundlichen Grüßen\nAutohaus HESSEN GmbH" : ""
       };
     }
     if (type === "letter") {
@@ -2041,15 +2155,19 @@
       var rem = findById(state.reminders, id);
       if (!rem) return missingDocumentHtml();
       var remInvoice = findById(state.invoices, rem.invoiceId);
-      title = "Mahnung " + rem.id;
-      intro = "Zu der unten genannten Rechnung ist noch ein offener Betrag vorhanden. Bitte prüfen Sie die Zahlung und begleichen Sie den Betrag zeitnah.";
+      var remText = reminderText(rem);
+      title = reminderLevelLabel(rem.level) + " " + rem.id;
+      intro = remText.print;
       rows = [
         ["Kunde", rem.customerName],
         ["Rechnung", rem.invoiceId],
         ["Fahrzeug", remInvoice ? remInvoice.vehicleName : "-"],
+        ["Mahnstufe", reminderLevelLabel(rem.level)],
         ["Mahndatum", rem.date],
+        ["Zahlbar bis", rem.dueDate || "-"],
         ["Offener Betrag", formatMoney(rem.amount)],
-        ["Status", rem.status]
+        ["Status", rem.status],
+        ["Hinweis", remText.followup]
       ];
     } else if (type === "customer") {
       var customer = findById(state.customers, id);
@@ -2480,8 +2598,8 @@
 
   function statusBadge(status) {
     var cls = status === "Bestand" || status === "Bezahlt" || status === "Aktiv" || status === "Versandbereit" || status === "Erledigt" ? "good" :
-      status === "Reserviert" || status === "Teilbezahlt" || status === "Auftrag" || status === "Erstellt" || status === "Entwurf" || status === "In Arbeit" ? "warn" :
-      status === "Offen" ? "bad" : "info";
+      status === "Reserviert" || status === "Teilbezahlt" || status === "Auftrag" || status === "Erstellt" || status === "Entwurf" || status === "In Arbeit" || status === "1. Mahnung" ? "warn" :
+      status === "Offen" || status === "2. Mahnung" || status === "3. Mahnung" ? "bad" : "info";
     return { html: '<span class="status ' + cls + '">' + escapeHtml(status) + "</span>" };
   }
 
