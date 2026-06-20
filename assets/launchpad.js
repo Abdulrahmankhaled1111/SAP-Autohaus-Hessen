@@ -2,11 +2,20 @@
   "use strict";
 
   document.addEventListener("DOMContentLoaded", function () {
-    bindSearch();
-    loadUser();
-    loadOverview();
-    checkSystem();
+    waitForDevelopmentMode(function () {
+      bindSearch();
+      loadUser();
+      loadOverview();
+      checkSystem();
+    });
   });
+
+  function waitForDevelopmentMode(callback) {
+    Promise.resolve(window.AUTOHAUS_DEVELOPMENT_MODE_READY).then(function () {
+      if (window.AUTOHAUS_DEVELOPMENT_LOCKED) return;
+      callback();
+    });
+  }
 
   function bindSearch() {
     var search = document.getElementById("tileSearch");

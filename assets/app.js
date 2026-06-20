@@ -113,19 +113,28 @@
   };
 
   document.addEventListener("DOMContentLoaded", function () {
-    bindNavigation();
-    bindForms();
-    window.addEventListener("hashchange", applyHashView);
-    window.setInterval(applyHashView, 250);
-    byId("roleSelect").value = state.session.role;
-    applyAppContext();
-    applyRole();
-    setView(allowedView(window.location.hash.replace("#", "") || inferInitialView()));
-    applyLetterTemplate();
-    render();
-    loadCloudUser();
-    loadEnterpriseState();
+    waitForDevelopmentMode(function () {
+      bindNavigation();
+      bindForms();
+      window.addEventListener("hashchange", applyHashView);
+      window.setInterval(applyHashView, 250);
+      byId("roleSelect").value = state.session.role;
+      applyAppContext();
+      applyRole();
+      setView(allowedView(window.location.hash.replace("#", "") || inferInitialView()));
+      applyLetterTemplate();
+      render();
+      loadCloudUser();
+      loadEnterpriseState();
+    });
   });
+
+  function waitForDevelopmentMode(callback) {
+    Promise.resolve(window.AUTOHAUS_DEVELOPMENT_MODE_READY).then(function () {
+      if (window.AUTOHAUS_DEVELOPMENT_LOCKED) return;
+      callback();
+    });
+  }
 
   function loadState() {
     var saved = readStored(STORAGE_KEY);

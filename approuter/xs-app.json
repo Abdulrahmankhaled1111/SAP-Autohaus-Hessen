@@ -1,7 +1,25 @@
 {
-  "welcomeFile": "/index.html",
+  "welcomeFile": "/maintenance.html",
   "authenticationMethod": "route",
   "routes": [
+    {
+      "source": "^/maintenance.html$",
+      "target": "maintenance.html",
+      "localDir": "resources",
+      "authenticationType": "none"
+    },
+    {
+      "source": "^/development-mode.json$",
+      "target": "development-mode.json",
+      "localDir": "resources",
+      "authenticationType": "none"
+    },
+    {
+      "source": "^/assets/icons/(.*)$",
+      "target": "assets/icons/$1",
+      "localDir": "resources",
+      "authenticationType": "none"
+    },
     {
       "source": "^/user-api(.*)$",
       "target": "$1",
@@ -24,6 +42,6 @@
   ],
   "logout": {
     "logoutEndpoint": "/logout",
-    "logoutPage": "/index.html"
+    "logoutPage": "/maintenance.html?loggedOut=1"
   }
 }

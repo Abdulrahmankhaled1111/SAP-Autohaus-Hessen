@@ -1,7 +1,8 @@
-const CACHE_NAME = "autohaus-hessen-pwa-v20260620-erp-ready";
+const CACHE_NAME = "autohaus-hessen-pwa-v20260620-dev-mode";
 
 const STATIC_ASSETS = [
   "/",
+  "/maintenance.html",
   "/index.html",
   "/app.html",
   "/offline.html",
@@ -10,6 +11,7 @@ const STATIC_ASSETS = [
   "/assets/app.js",
   "/assets/launchpad.css",
   "/assets/launchpad.js",
+  "/assets/development-mode.js",
   "/assets/session.js",
   "/assets/pwa.js",
   "/assets/icons/favicon.svg",
@@ -20,6 +22,7 @@ const STATIC_ASSETS = [
 
 const NETWORK_ONLY_PREFIXES = [
   "/api/",
+  "/development-mode.json",
   "/user-api",
   "/logout",
   "/login"

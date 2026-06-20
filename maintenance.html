@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Autohaus HESSEN - Entwicklungsmodus</title>
+  <meta name="theme-color" content="#172334">
+  <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+  <style>
+    :root {
+      --shell: #172334;
+      --shell-2: #243b55;
+      --surface: #ffffff;
+      --ink: #1f2a37;
+      --muted: #667085;
+      --line: #d8e0ea;
+      --accent: #0a6ed1;
+      --gold: #c47f00;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(10, 110, 209, 0.18), transparent 320px),
+        linear-gradient(135deg, #eef3f8 0%, #f7f9fb 54%, #e8eef5 100%);
+      font: 14px/1.5 "72", "Segoe UI", Arial, sans-serif;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .maintenance-card {
+      width: min(760px, 100%);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: 0 24px 70px rgba(16, 24, 40, 0.18);
+      overflow: hidden;
+    }
+
+    .maintenance-head {
+      min-height: 104px;
+      background: linear-gradient(90deg, var(--shell), var(--shell-2));
+      color: #fff;
+      padding: 22px 26px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-mark {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 850;
+      box-shadow: 0 10px 28px rgba(10, 110, 209, 0.28);
+    }
+
+    .maintenance-head h1 {
+      margin: 0;
+      font-size: 23px;
+      letter-spacing: 0;
+    }
+
+    .maintenance-head p {
+      margin: 2px 0 0;
+      color: #c9d7e6;
+      font-weight: 650;
+    }
+
+    .maintenance-body {
+      padding: 26px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .status-line {
+      border: 1px solid #f1d29a;
+      border-left: 4px solid var(--gold);
+      border-radius: 8px;
+      background: #fff8eb;
+      padding: 14px 16px;
+      color: #5f3b00;
+      font-weight: 750;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .info-grid div {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px;
+      background: #fbfcfe;
+    }
+
+    .info-grid span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .info-grid strong {
+      display: block;
+      margin-top: 5px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      min-height: 40px;
+      border: 1px solid #b8c3cf;
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      padding: 10px 14px;
+      text-decoration: none;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    .btn.primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    @media (max-width: 720px) {
+      body { padding: 14px; }
+      .maintenance-head { align-items: flex-start; }
+      .info-grid { grid-template-columns: 1fr; }
+      .actions { justify-content: stretch; }
+      .btn { width: 100%; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <main class="maintenance-card" id="maintenanceCard">
+    <header class="maintenance-head">
+      <div class="brand-mark">AH</div>
+      <div>
+        <h1>Autohaus HESSEN</h1>
+        <p>SAP Fiori ERP System</p>
+      </div>
+    </header>
+    <section class="maintenance-body">
+      <div class="status-line" id="statusLine">Systemstatus wird geprüft...</div>
+      <p id="message">Bitte einen Moment warten.</p>
+      <div class="info-grid">
+        <div><span>Status</span><strong id="modeStatus">Prüfung</strong></div>
+        <div><span>Freigabe</span><strong id="expectedUntil">Nach Abschluss</strong></div>
+        <div><span>Ansprechpartner</span><strong id="contact">Administration</strong></div>
+      </div>
+      <div class="actions" id="actions"></div>
+    </section>
+  </main>
+  <script>
+    (function () {
+      "use strict";
+
+      var params = new URLSearchParams(window.location.search);
+      var preview = params.get("preview") === "dev";
+      var loggedOut = params.get("loggedOut") === "1";
+
+      if (loggedOut) {
+        renderLoggedOut();
+        return;
+      }
+
+      fetch("development-mode.json?ts=" + Date.now(), { cache: "no-store" })
+        .then(function (response) { return response.ok ? response.json() : { enabled: false }; })
+        .then(function (config) {
+          if (!config.enabled && !preview) {
+            window.location.replace("index.html");
+            return;
+          }
+          renderDevelopmentMode(config);
+        })
+        .catch(function () {
+          window.location.replace("index.html");
+        });
+
+      function renderDevelopmentMode(config) {
+        setText("statusLine", config.title || "Entwicklungsmodus");
+        setText("message", config.message || "Das System wird aktuell weiterentwickelt und ist vorübergehend nicht verfügbar.");
+        setText("modeStatus", "Anmeldung gesperrt");
+        setText("expectedUntil", config.expectedUntil || "Nach Freigabe");
+        setText("contact", config.contact || "Administration");
+        document.getElementById("actions").innerHTML = '<button class="btn" type="button" onclick="window.location.reload()">Status erneut prüfen</button>';
+      }
+
+      function renderLoggedOut() {
+        setText("statusLine", "Sie wurden abgemeldet.");
+        setText("message", "Die Sitzung wurde beendet. Sie können das Browserfenster schließen oder sich erneut anmelden.");
+        setText("modeStatus", "Abgemeldet");
+        setText("expectedUntil", "Bei Bedarf");
+        setText("contact", "Autohaus HESSEN");
+        document.getElementById("actions").innerHTML = '<a class="btn primary" href="index.html">Erneut anmelden</a>';
+      }
+
+      function setText(id, value) {
+        var element = document.getElementById(id);
+        if (element) element.textContent = value;
+      }
+    }());
+  </script>
+</body>
+</html>
