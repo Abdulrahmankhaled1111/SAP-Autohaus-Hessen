@@ -9,8 +9,9 @@
   var labelOverrideUntil = 0;
 
   document.addEventListener("DOMContentLoaded", function () {
-    if (!readLastActivity()) writeLastActivity(Date.now());
+    writeLastActivity(Date.now());
     bindActivity();
+    bindLogoutReset();
     bindSessionButton();
     window.setInterval(checkSession, 1000);
     updateSessionButton();
@@ -36,6 +37,13 @@
       labelOverrideUntil = Date.now() + 1400;
       updateSessionButton();
     });
+  }
+
+  function bindLogoutReset() {
+    document.addEventListener("click", function (event) {
+      var target = event.target && event.target.closest ? event.target.closest('a[href="/logout"], #logoutButton') : null;
+      if (target) clearLastActivity();
+    }, true);
   }
 
   function recordActivity(force) {
@@ -98,7 +106,16 @@
     }
   }
 
+  function clearLastActivity() {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (error) {
+      // Ohne lokalen Speicher wird die Cloud-Sitzung trotzdem beendet.
+    }
+  }
+
   function logout() {
+    clearLastActivity();
     if (window.location.hostname.indexOf("hana.ondemand.com") > -1) {
       window.location.href = "/logout";
       return;

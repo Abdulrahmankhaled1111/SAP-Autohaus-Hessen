@@ -2398,6 +2398,11 @@
 
   function logoutUser(skipAudit) {
     if (!skipAudit) saveState("Abmeldung", "Benutzer hat Abmelden gewählt.");
+    try {
+      localStorage.removeItem("autohaus-hessen-session-last-activity");
+    } catch (error) {
+      // Die Cloud-Abmeldung darf nicht am lokalen Browser-Speicher scheitern.
+    }
     if (window.location.hostname.indexOf("hana.ondemand.com") > -1) {
       window.location.href = "/logout";
       return;

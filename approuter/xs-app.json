@@ -42,6 +42,6 @@
   ],
   "logout": {
     "logoutEndpoint": "/logout",
-    "logoutPage": "/maintenance.html?loggedOut=1"
+    "logoutPage": "/index.html?fresh=after-logout"
   }
 }
