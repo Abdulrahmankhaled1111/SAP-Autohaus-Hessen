@@ -98,6 +98,7 @@ jobs:
           CF_CLIENT_SECRET: ${{ secrets.CF_CLIENT_SECRET }}
           CF_USERNAME: ${{ secrets.CF_USERNAME }}
           CF_PASSWORD: ${{ secrets.CF_PASSWORD }}
+          CF_ORIGIN: ${{ secrets.CF_ORIGIN }}
         run: |
           set -euo pipefail
           : "${CF_API:?GitHub Secret CF_API fehlt}"
@@ -111,7 +112,11 @@ jobs:
           else
             : "${CF_USERNAME:?GitHub Secret CF_USERNAME fehlt, falls kein technischer Client verwendet wird}"
             : "${CF_PASSWORD:?GitHub Secret CF_PASSWORD fehlt, falls kein technischer Client verwendet wird}"
-            cf auth "$CF_USERNAME" "$CF_PASSWORD"
+            if [ -n "${CF_ORIGIN:-}" ]; then
+              cf auth "$CF_USERNAME" "$CF_PASSWORD" --origin "$CF_ORIGIN"
+            else
+              cf auth "$CF_USERNAME" "$CF_PASSWORD"
+            fi
           fi
 
           cf target -o "$CF_ORG" -s "$CF_SPACE"
