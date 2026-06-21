@@ -4,8 +4,8 @@ Diese Pipeline ermöglicht Deployment aus GitHub heraus, ohne jedes Mal einen ma
 
 ## Was die Pipeline macht
 
-- Bei jedem Push nach `main` prüft GitHub Actions den Code.
-- Manuelles Deployment läuft über **Actions > SAP BTP CI/CD > Run workflow**.
+- Bei jedem Push nach `main` prüft GitHub Actions den Code und deployed automatisch nach SAP BTP.
+- Manuelles Deployment ist zusätzlich über **Actions > SAP BTP CI/CD > Run workflow** möglich.
 - Vor dem Deployment werden Checks und BTP-Build ausgeführt.
 - Danach werden API und AppRouter mit `manifest.yml` nach SAP BTP Cloud Foundry gepusht.
 
@@ -66,7 +66,18 @@ Professionelle Varianten:
    - Nur für lokale Deployments geeignet.
    - Nicht für GitHub Actions geeignet.
 
-## Deployment starten
+## Automatisches Deployment
+
+1. Datei ändern, zum Beispiel `development-mode.json`.
+2. Änderung nach `main` committen.
+3. GitHub startet automatisch:
+   - `Check and build`
+   - `Deploy to SAP BTP`
+4. Wenn beide Schritte grün sind, ist die Änderung live.
+
+## Manuelles Deployment
+
+Wenn du ohne neue Änderung nochmal deployen willst:
 
 1. GitHub öffnen.
 2. Repository `SAP-Autohaus-Hessen` öffnen.
@@ -83,7 +94,7 @@ Wenn Anwender während Entwicklung nicht ins System sollen:
 "enabled": true
 ```
 
-in `development-mode.json` setzen, committen und Pipeline laufen lassen.
+in `development-mode.json` setzen und committen. Danach deployed GitHub automatisch.
 
 Nach Abschluss wieder:
 
@@ -91,15 +102,15 @@ Nach Abschluss wieder:
 "enabled": false
 ```
 
-setzen und erneut deployen.
+setzen und committen. Danach deployed GitHub automatisch.
 
 ## Zielbild
 
 ```mermaid
 flowchart TD
-  A["Entwickler pusht nach GitHub"] --> B["GitHub Actions prüft Code"]
+  A["Entwickler pusht nach GitHub main"] --> B["GitHub Actions prüft Code"]
   B --> C["BTP Build"]
-  C --> D["Manueller Deploy-Knopf"]
+  C --> D["Automatisches Deployment"]
   D --> E["Cloud Foundry Login mit Secret"]
   E --> F["cf push manifest.yml"]
   F --> G["SAP BTP: API + AppRouter laufen"]
