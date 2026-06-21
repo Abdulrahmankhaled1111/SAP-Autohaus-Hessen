@@ -277,10 +277,11 @@ async function writeSystemPayload(connection, state) {
 
 async function replaceCollection(connection, collection, items) {
   const tableName = COLLECTION_TABLES[collection];
+  const usedIds = new Set();
   await hanaExec(connection, "DELETE FROM " + tableName);
   for (let index = 0; index < items.length; index += 1) {
     const item = { ...items[index] };
-    item.id = item.id || fallbackItemId(collection, index);
+    item.id = uniqueItemId(collection, item.id, index, usedIds);
     await hanaExec(connection, "INSERT INTO " + tableName + " (ID, PAYLOAD, UPDATED_AT, UPDATED_BY) VALUES (?, ?, CURRENT_TIMESTAMP, ?)", [String(item.id), JSON.stringify(item), "Autohaus HESSEN API"]);
   }
 }
@@ -310,6 +311,23 @@ function fallbackItemId(collection, index) {
     audit: "LG"
   }[collection] || "ERP";
   return prefix + "-AUTO-" + String(index + 1).padStart(5, "0");
+}
+
+function uniqueItemId(collection, currentId, index, usedIds) {
+  let id = String(currentId || "");
+  if (id && !usedIds.has(id)) {
+    usedIds.add(id);
+    return id;
+  }
+
+  let offset = index;
+  do {
+    id = fallbackItemId(collection, offset);
+    offset += 1;
+  } while (usedIds.has(id));
+
+  usedIds.add(id);
+  return id;
 }
 
 function parsePayload(payload) {
@@ -520,6 +538,7 @@ function nextId(collection, items) {
 
 function audit(state, req, action, detail) {
   state.audit.unshift({
+    id: "LG-" + Date.now() + "-" + crypto.randomBytes(3).toString("hex"),
     time: new Date().toLocaleString("de-DE"),
     action,
     detail,
