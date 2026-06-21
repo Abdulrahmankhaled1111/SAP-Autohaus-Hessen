@@ -3,7 +3,7 @@
   "name": "Autohaus HESSEN ERP",
   "short_name": "Autohaus",
   "description": "Mobile SAP-Fiori-Arbeitsplatz-App fuer Autohaus HESSEN.",
-  "start_url": "/maintenance.html?source=pwa",
+  "start_url": "/index.html?source=pwa",
   "scope": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "browser"],
