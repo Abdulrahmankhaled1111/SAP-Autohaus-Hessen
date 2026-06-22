@@ -280,6 +280,25 @@ h2 {
   font-size: 28px;
   line-height: 1;
   font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.overview-card.is-loading strong,
+.overview-card.is-unavailable strong {
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.overview-card.is-ready {
+  border-color: #c9d8e8;
+}
+
+.overview-card.is-ready strong {
+  color: #0b5cab;
+}
+
+.overview-card.is-unavailable {
+  border-color: rgba(196, 127, 0, 0.35);
 }
 
 .group-section {

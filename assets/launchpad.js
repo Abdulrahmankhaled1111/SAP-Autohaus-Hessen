@@ -63,6 +63,7 @@
   }
 
   function loadOverview() {
+    setOverviewLoading();
     fetch(apiUrl("/admin/summary"), { credentials: "include" })
       .then(function (response) { return response.ok ? response.json() : Promise.reject(new Error("Zusammenfassung nicht erreichbar")); })
       .then(function (summary) {
@@ -71,11 +72,38 @@
         setOverviewValue("lpVehicles", summary.counts && summary.counts.vehicles);
         setOverviewValue("lpTickets", summary.workflow && summary.workflow.openTickets);
       })
+      .catch(loadOverviewFromState);
+  }
+
+  function loadOverviewFromState() {
+    fetch(apiUrl("/state"), { credentials: "include" })
+      .then(function (response) { return response.ok ? response.json() : Promise.reject(new Error("Datenstand nicht erreichbar")); })
+      .then(function (state) {
+        state = state || {};
+        setOverviewValue("lpOpenInvoices", openItems(state.invoices, "Bezahlt"));
+        setOverviewValue("lpOpenTasks", openItems(state.tasks, "Erledigt"));
+        setOverviewValue("lpVehicles", Array.isArray(state.vehicles) ? state.vehicles.length : 0);
+        setOverviewValue("lpTickets", openItems(state.tickets, "Erledigt"));
+      })
       .catch(function () {
         ["lpOpenInvoices", "lpOpenTasks", "lpVehicles", "lpTickets"].forEach(function (id) {
-          setText(id, "-");
+          setOverviewUnavailable(id);
         });
       });
+  }
+
+  function setOverviewLoading() {
+    ["lpOpenInvoices", "lpOpenTasks", "lpVehicles", "lpTickets"].forEach(function (id) {
+      setText(id, "...");
+      setOverviewState(id, "is-loading");
+    });
+  }
+
+  function openItems(items, doneStatus) {
+    if (!Array.isArray(items)) return 0;
+    return items.filter(function (item) {
+      return item && item.status !== doneStatus;
+    }).length;
   }
 
   function apiUrl(path) {
@@ -91,11 +119,25 @@
   }
 
   function setOverviewValue(id, value) {
+    setOverviewState(id, "is-ready");
     setText(id, formatNumber(value));
   }
 
+  function setOverviewUnavailable(id) {
+    setOverviewState(id, "is-unavailable");
+    setText(id, "n/v");
+  }
+
+  function setOverviewState(id, stateClass) {
+    var element = document.getElementById(id);
+    if (!element || !element.parentElement) return;
+    element.parentElement.classList.remove("is-loading", "is-ready", "is-unavailable");
+    element.parentElement.classList.add(stateClass);
+  }
+
   function formatNumber(value) {
-    var number = Number(value || 0);
+    var number = Number(value);
+    if (!Number.isFinite(number)) number = 0;
     return number.toLocaleString("de-DE");
   }
 }());
