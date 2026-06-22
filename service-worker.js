@@ -1,4 +1,4 @@
-const CACHE_NAME = "autohaus-hessen-pwa-v20260621-session-login";
+const CACHE_NAME = "autohaus-hessen-pwa-v20260622-launchpad-kpis";
 
 const STATIC_ASSETS = [
   "/",
