@@ -340,6 +340,7 @@
     byId("refreshOperations").addEventListener("click", function () {
       loadOperationsSummary(true);
     });
+    byId("downloadOpsReport").addEventListener("click", downloadOpsReport);
     byId("downloadBackup").addEventListener("click", downloadBackup);
     byId("launchpadButton").addEventListener("click", function () {
       window.location.href = "index.html";
@@ -928,8 +929,12 @@
     setText("opsDatabaseStatus", database);
     setText("opsTableStatus", tableStatus);
     setText("opsAuditStatus", String(summary.counts && summary.counts.audit ? summary.counts.audit : state.audit.length));
+    setText("opsMonitoringStatus", summary.operations && summary.operations.monitoringStatus ? summary.operations.monitoringStatus : "Basisprüfung");
+    setText("opsArchiveStatus", summary.operations && summary.operations.archiveStatus ? summary.operations.archiveStatus : "Vorbereitet");
     setText("opsLastSync", operationsText(summary));
     renderReadiness(summary.readiness || localReadiness());
+    renderProductionReadiness(summary.productionControls || localProductionControls());
+    renderIntegrationStatus(summary.integrationStatus || localIntegrationStatus());
   }
 
   function operationsText(summary) {
@@ -966,7 +971,13 @@
       },
       finance: { openInvoices: openInvoices.length },
       workflow: { openTasks: openTasks.length, openTickets: openTickets.length },
-      readiness: localReadiness()
+      readiness: localReadiness(),
+      productionControls: localProductionControls(),
+      integrationStatus: localIntegrationStatus(),
+      operations: {
+        monitoringStatus: enterpriseBackend === "api" ? "API-Prüfung" : "Lokal",
+        archiveStatus: "Vorbereitet"
+      }
     };
   }
 
@@ -974,7 +985,32 @@
     return [
       { label: "SAP/BTP Login", status: enterpriseBackend === "api" ? "good" : "warn", text: enterpriseBackend === "api" ? "Benutzer läuft über die Cloud-App." : "Lokal oder Browser-Modus aktiv." },
       { label: "SAP HANA Cloud", status: enterpriseBackend === "api" ? "good" : "warn", text: enterpriseBackend === "api" ? "Zentrale API ist aktiv." : "Noch nicht mit der API verbunden." },
-      { label: "Datensicherung", status: "warn", text: "Backup über Admin-Knopf herunterladen und extern ablegen." }
+      { label: "Datensicherung", status: "warn", text: "Backup über Admin-Knopf herunterladen und extern ablegen." },
+      { label: "Fehlerseiten", status: "good", text: "Entwicklungsmodus und klare Betriebsstatusmeldungen sind vorhanden." },
+      { label: "Freigabeprozess", status: "warn", text: "GitHub Actions sind vorbereitet. Für Produktion braucht es getrennte Test- und Freigabestufen." }
+    ];
+  }
+
+  function localProductionControls() {
+    return [
+      { label: "Stabile BTP-Umgebung", status: enterpriseBackend === "api" ? "warn" : "bad", owner: "SAP/BTP Admin", text: "Aktuell ist die App Cloud-fähig. Für den echten Betrieb wird ein produktiver BTP-Subaccount statt Trial benötigt." },
+      { label: "BTP/SAP Rollenmodell", status: "warn", owner: "Security / Admin", text: "Rollen werden vorbereitet. Die finale Vergabe erfolgt über BTP-Rollensammlungen und später S/4HANA-Berechtigungen." },
+      { label: "Buchhaltung", status: "warn", owner: "FI/CO / Steuerbüro", text: "Rechnungen sind im System vorhanden. Offizielle Buchhaltung muss über S/4HANA, SAP FI oder DATEV angebunden werden." },
+      { label: "Automatische Backups", status: "warn", owner: "BTP Admin", text: "Manueller JSON-Export ist vorhanden. Automatische HANA-Backups und Exportablage müssen im Produktivkonto geplant werden." },
+      { label: "Monitoring", status: enterpriseBackend === "api" ? "warn" : "bad", owner: "BTP Betrieb", text: "Health-Check ist vorhanden. Für Produktion fehlen noch Alarmierung und Verfügbarkeitsüberwachung." },
+      { label: "Datenschutz / DSGVO", status: "warn", owner: "Geschäftsführung / Datenschutz", text: "Technische Vorbereitung ist vorhanden. Löschfristen, Auftragsverarbeitung und rechtliche Freigabe müssen geprüft werden." },
+      { label: "Audit & Protokoll", status: state.audit.length ? "good" : "warn", owner: "Admin", text: "Änderungen werden protokolliert. Für Produktion werden längere Aufbewahrung und Auswertung empfohlen." },
+      { label: "E-Mail & Archivierung", status: "warn", owner: "Backoffice", text: "E-Mail-Vorlagen und PDF/Druck sind vorhanden. Revisionssichere Archivierung und SMTP müssen angebunden werden." }
+    ];
+  }
+
+  function localIntegrationStatus() {
+    return [
+      { label: "SAP HANA Cloud", status: enterpriseBackend === "api" ? "good" : "warn", text: enterpriseBackend === "api" ? "Datenhaltung über ERP-API aktiv." : "Lokaler Browsermodus aktiv." },
+      { label: "S/4HANA", status: "warn", text: "Integrationsschicht fachlich vorbereitet. Destination S4HANA_CLOUD fehlt noch." },
+      { label: "DATEV / SAP FI", status: "warn", text: "Buchhaltungsübergabe fachlich geplant, aber noch nicht produktiv angebunden." },
+      { label: "E-Mail Versand", status: "warn", text: "Versand startet aktuell über Mail-Client. SMTP/API-Anbindung fehlt noch." },
+      { label: "Dokumentenarchiv", status: "warn", text: "Dokumente können gedruckt/exportiert werden. Revisionssichere Ablage fehlt noch." }
     ];
   }
 
@@ -1023,6 +1059,88 @@
       row.appendChild(text);
       container.appendChild(row);
     });
+  }
+
+  function renderProductionReadiness(items) {
+    var container = byId("productionReadinessList");
+    if (!container) return;
+    container.textContent = "";
+    items.forEach(function (item) {
+      var row = document.createElement("article");
+      row.className = "production-item " + (item.status || "warn");
+      var badge = document.createElement("span");
+      badge.className = "status " + (item.status || "warn");
+      badge.textContent = item.status === "good" ? "Bereit" : item.status === "bad" ? "Blockiert" : "Offen";
+      var title = document.createElement("strong");
+      title.textContent = item.label;
+      var owner = document.createElement("small");
+      owner.textContent = item.owner ? "Zuständig: " + item.owner : "Zuständig: Administration";
+      var text = document.createElement("p");
+      text.textContent = item.text || "";
+      row.appendChild(badge);
+      row.appendChild(title);
+      row.appendChild(owner);
+      row.appendChild(text);
+      container.appendChild(row);
+    });
+  }
+
+  function renderIntegrationStatus(items) {
+    var container = byId("integrationStatusGrid");
+    if (!container) return;
+    container.textContent = "";
+    items.forEach(function (item) {
+      var row = document.createElement("article");
+      row.className = "integration-card " + (item.status || "warn");
+      var title = document.createElement("strong");
+      title.textContent = item.label;
+      var badge = document.createElement("span");
+      badge.className = "status " + (item.status || "warn");
+      badge.textContent = item.status === "good" ? "Verbunden" : item.status === "bad" ? "Fehler" : "Vorbereitet";
+      var text = document.createElement("p");
+      text.textContent = item.text || "";
+      row.appendChild(title);
+      row.appendChild(badge);
+      row.appendChild(text);
+      container.appendChild(row);
+    });
+  }
+
+  function downloadOpsReport() {
+    if (!(role().admin || state.session.role === "owner")) return toast("Nur Admin oder Chef dürfen den Betriebsbericht erstellen.");
+    var url = enterpriseApiUrl("/admin/ops-report");
+    if (enterpriseBackend === "api" && url && window.fetch) {
+      fetch(url, { credentials: "include" })
+        .then(function (response) {
+          if (!response.ok) throw new Error("Betriebsbericht nicht verfügbar");
+          return response.json();
+        })
+        .then(function (report) {
+          downloadJson(report, "autohaus-hessen-betriebsbericht-" + today() + ".json");
+          toast("Betriebsbericht wurde erstellt.");
+        })
+        .catch(function () {
+          downloadJson(localOpsReport(), "autohaus-hessen-lokaler-betriebsbericht-" + today() + ".json");
+          toast("Lokaler Betriebsbericht wurde erstellt.");
+        });
+      return;
+    }
+    downloadJson(localOpsReport(), "autohaus-hessen-lokaler-betriebsbericht-" + today() + ".json");
+    toast("Lokaler Betriebsbericht wurde erstellt.");
+  }
+
+  function localOpsReport() {
+    var summary = operationsSummary || localOperationsSummary();
+    return {
+      exportType: "AUTOHAUS_HESSEN_OPERATIONS_REPORT",
+      generatedAt: new Date().toISOString(),
+      generatedBy: role().label,
+      environment: enterpriseBackend,
+      summary: summary,
+      productionControls: summary.productionControls || localProductionControls(),
+      integrationStatus: summary.integrationStatus || localIntegrationStatus(),
+      releaseRecommendation: "Für echte Firmennutzung: Trial durch produktive BTP-Umgebung ersetzen, S/4HANA/DATEV fachlich freigeben, automatische Backups und Monitoring aktivieren."
+    };
   }
 
   function downloadBackup() {

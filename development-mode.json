@@ -1,8 +1,8 @@
 {
-  "enabled": false,
+  "enabled": true,
   "title": "Entwicklungsmodus",
   "headline": "Autohaus HESSEN wird gerade aktualisiert",
   "message": "Das System wird aktuell weiterentwickelt und geprüft. Aus Sicherheitsgründen ist die Anmeldung für Anwender vorübergehend gesperrt.",
-  "expectedUntil": "",
+  "expectedUntil": "Nach technischer Freigabe",
   "contact": "Autohaus HESSEN Administration"
 }

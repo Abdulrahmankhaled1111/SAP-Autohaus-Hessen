@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Autohaus HESSEN - Fiori App</title>
-  <link rel="manifest" href="manifest.webmanifest?v=20260621-session-login">
+  <link rel="manifest" href="manifest.webmanifest?v=20260624-production-readiness">
   <meta name="theme-color" content="#0f6ab4">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -12,7 +12,7 @@
   <meta name="apple-mobile-web-app-title" content="Autohaus HESSEN">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="assets/app.css?v=20260621-session-login">
+  <link rel="stylesheet" href="assets/app.css?v=20260624-production-readiness">
 </head>
 <body>
   <div class="app-shell">
@@ -541,6 +541,7 @@
                 <div class="panel-title">SAP-Systembetrieb</div>
                 <div class="toolbar compact-toolbar">
                   <button class="btn" id="refreshOperations">Status prüfen</button>
+                  <button class="btn" id="downloadOpsReport">Betriebsbericht</button>
                   <button class="btn primary" id="downloadBackup">Backup herunterladen</button>
                 </div>
               </div>
@@ -562,6 +563,14 @@
                     <span>Audit-Einträge</span>
                     <strong id="opsAuditStatus">0</strong>
                   </div>
+                  <div class="ops-item">
+                    <span>Monitoring</span>
+                    <strong id="opsMonitoringStatus">Wird geprüft</strong>
+                  </div>
+                  <div class="ops-item">
+                    <span>Archiv & E-Mail</span>
+                    <strong id="opsArchiveStatus">Wird geprüft</strong>
+                  </div>
                 </div>
                 <div class="notice-box ops-note">
                   <strong>Firmenbetrieb</strong>
@@ -582,6 +591,26 @@
             </div>
           </div>
 
+          <div class="grid-2 operations-layout">
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">Produktiv-Checkliste</div></div>
+              <div class="panel-body">
+                <div class="production-list" id="productionReadinessList"></div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header"><div class="panel-title">ERP-Integrationen</div></div>
+              <div class="panel-body">
+                <div class="integration-grid" id="integrationStatusGrid"></div>
+                <div class="notice-box ops-note">
+                  <strong>S/4HANA / DATEV</strong>
+                  <p>Deine Autohaus-App bleibt die BTP-Erweiterung. Buchhaltung, Steuer und offizielle Finanzprozesse werden später über S/4HANA oder DATEV angebunden.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="panel">
             <div class="panel-header"><div class="panel-title">Sicherheits- und Änderungsprotokoll</div></div>
             <div class="table-wrap">
@@ -597,10 +626,10 @@
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div id="sideSheet" class="side-sheet-backdrop" hidden></div>
-  <script src="assets/development-mode.js?v=20260621-session-login"></script>
-  <script src="assets/app.js?v=20260621-session-login"></script>
-  <script src="assets/session.js?v=20260621-session-login"></script>
-  <script src="assets/pwa.js?v=20260621-session-login"></script>
+  <script src="assets/development-mode.js?v=20260624-production-readiness"></script>
+  <script src="assets/app.js?v=20260624-production-readiness"></script>
+  <script src="assets/session.js?v=20260624-production-readiness"></script>
+  <script src="assets/pwa.js?v=20260624-production-readiness"></script>
 </body>
 </html>
 

@@ -648,6 +648,73 @@ textarea {
   margin: 4px 0 0;
 }
 
+.production-list {
+  display: grid;
+  gap: 10px;
+}
+
+.production-item,
+.integration-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft);
+  padding: 12px;
+}
+
+.production-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 10px;
+  align-items: start;
+}
+
+.production-item strong,
+.integration-card strong {
+  display: block;
+  font-size: 14px;
+}
+
+.production-item small,
+.production-item p,
+.integration-card p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.production-item small,
+.production-item p {
+  grid-column: 2;
+}
+
+.production-item.good,
+.integration-card.good {
+  border-color: rgba(19, 115, 51, 0.28);
+  background: #f4fbf6;
+}
+
+.production-item.warn,
+.integration-card.warn {
+  border-color: rgba(196, 127, 0, 0.3);
+  background: #fffaf0;
+}
+
+.production-item.bad,
+.integration-card.bad {
+  border-color: rgba(180, 35, 24, 0.32);
+  background: #fff5f5;
+}
+
+.integration-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.integration-card {
+  display: grid;
+  gap: 8px;
+}
+
 .panel {
   overflow: hidden;
   background: var(--surface);

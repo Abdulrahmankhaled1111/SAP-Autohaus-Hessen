@@ -567,6 +567,8 @@ function businessSummary(state, storage, req) {
     return sum + Math.max(0, Number(invoice.gross || 0) - Number(invoice.paid || 0));
   }, 0);
   const scopes = authScopes(req);
+  const productionControls = productionControlItems(storage, counts, scopes);
+  const integrationStatus = integrationStatusItems(storage);
   return {
     system: "Autohaus HESSEN ERP Core",
     time: new Date().toISOString(),
@@ -588,8 +590,128 @@ function businessSummary(state, storage, req) {
       openTasks: openTasks.length,
       openTickets: openTickets.length
     },
-    readiness: readinessItems(storage, counts, scopes)
+    operations: {
+      deploymentMode: process.env.BTP_ACCOUNT_TYPE || "trial/free-tier-or-dev",
+      monitoringStatus: monitoringConfigured() ? "Aktiv" : "Basisprüfung",
+      archiveStatus: archiveConfigured() || mailConfigured() ? "Teilweise aktiv" : "Vorbereitet",
+      errorPolicy: "Strukturierte API-Fehler mit Zeitstempel und Request-ID"
+    },
+    readiness: readinessItems(storage, counts, scopes),
+    productionControls,
+    integrationStatus
   };
+}
+
+function productionControlItems(storage, counts, scopes) {
+  const hanaReady = storage.storage === "SAP HANA Cloud" && storage.connected;
+  const productiveBtp = /^prod|production$/i.test(process.env.BTP_ACCOUNT_TYPE || "") || process.env.PRODUCTION_BTP === "true";
+  const accountingReady = Boolean(process.env.S4HANA_DESTINATION || process.env.S4HANA_URL || process.env.DATEV_EXPORT_ENABLED === "true");
+  const backupReady = Boolean(process.env.BACKUP_POLICY_URL || process.env.BACKUP_BUCKET || process.env.BACKUP_SCHEDULE === "automatic");
+  const testsReady = process.env.CI_CD_ENABLED !== "false";
+  return [
+    {
+      label: "Stabile BTP-Umgebung",
+      status: productiveBtp ? "good" : "warn",
+      owner: "SAP/BTP Admin",
+      text: productiveBtp ? "Produktiver BTP-Betrieb ist markiert." : "Aktuell wirkt die Umgebung wie Trial/Free Tier oder Entwicklung. Für echte Firmennutzung produktiven Subaccount nutzen."
+    },
+    {
+      label: "BTP/SAP Rollenmodell",
+      status: scopes.length ? "good" : "warn",
+      owner: "Security / Admin",
+      text: scopes.length ? "Rollen/Scopes werden aus dem BTP-Login gelesen." : "Rollensammlungen in BTP pflegen und fachlich freigeben."
+    },
+    {
+      label: "Richtige Buchhaltung",
+      status: accountingReady ? "good" : "warn",
+      owner: "FI/CO / Steuerbüro",
+      text: accountingReady ? "Buchhaltungsintegration ist technisch konfiguriert." : "S/4HANA, SAP FI oder DATEV anbinden, bevor echte Finanzbuchungen produktiv laufen."
+    },
+    {
+      label: "Automatische Backups",
+      status: backupReady ? "good" : "warn",
+      owner: "BTP Admin",
+      text: backupReady ? "Backup-Ziel oder Plan ist hinterlegt." : "Manueller Backup-Export ist vorhanden. Automatische HANA-/Archiv-Backups im Produktivbetrieb einrichten."
+    },
+    {
+      label: "Monitoring",
+      status: monitoringConfigured() && hanaReady ? "good" : "warn",
+      owner: "BTP Betrieb",
+      text: monitoringConfigured() ? "Monitoring-Parameter sind hinterlegt." : "Health-Check ist vorhanden. Alarmierung und externe Überwachung noch einrichten."
+    },
+    {
+      label: "Bessere Fehlerseiten",
+      status: "good",
+      owner: "Entwicklung",
+      text: "API-Fehler werden strukturiert beantwortet. Login- und BTP-Fehler bleiben zusätzlich über SAP Identity Services sichtbar."
+    },
+    {
+      label: "Datenschutz / DSGVO",
+      status: process.env.DSGVO_APPROVED === "true" ? "good" : "warn",
+      owner: "Geschäftsführung / Datenschutz",
+      text: process.env.DSGVO_APPROVED === "true" ? "Datenschutzfreigabe ist markiert." : "Löschfristen, AV-Vertrag, Zugriffsrechte und Betroffenenrechte rechtlich prüfen lassen."
+    },
+    {
+      label: "Audit & Protokoll",
+      status: counts.audit > 0 ? "good" : "warn",
+      owner: "Admin",
+      text: counts.audit > 0 ? "Änderungen werden protokolliert." : "Noch keine Protokolleinträge vorhanden."
+    },
+    {
+      label: "Tests & Freigabeprozess",
+      status: testsReady ? "warn" : "bad",
+      owner: "Entwicklung / Admin",
+      text: testsReady ? "Projektchecks und GitHub-Workflow sind vorbereitet. Für Produktion Test-, Freigabe- und Rollback-Regeln definieren." : "CI/CD-Prüfungen sind deaktiviert."
+    },
+    {
+      label: "E-Mail & Archivierung",
+      status: mailConfigured() && archiveConfigured() ? "good" : "warn",
+      owner: "Backoffice",
+      text: mailConfigured() || archiveConfigured() ? "E-Mail oder Archiv ist teilweise konfiguriert." : "SMTP/API-Versand und revisionssicheres Dokumentenarchiv anbinden."
+    }
+  ];
+}
+
+function integrationStatusItems(storage) {
+  return [
+    {
+      label: "SAP HANA Cloud",
+      status: storage.storage === "SAP HANA Cloud" && storage.connected ? "good" : "warn",
+      text: storage.connected ? "Datenbankverbindung ist bereit." : "Datenbankverbindung prüfen oder HANA starten."
+    },
+    {
+      label: "S/4HANA",
+      status: process.env.S4HANA_DESTINATION || process.env.S4HANA_URL ? "good" : "warn",
+      text: process.env.S4HANA_DESTINATION || process.env.S4HANA_URL ? "S/4HANA-Ziel ist technisch hinterlegt." : "Destination S4HANA_CLOUD später in BTP anlegen."
+    },
+    {
+      label: "DATEV / SAP FI",
+      status: process.env.DATEV_EXPORT_ENABLED === "true" ? "good" : "warn",
+      text: process.env.DATEV_EXPORT_ENABLED === "true" ? "DATEV-Export ist markiert." : "Buchhaltungsübergabe fachlich vorbereiten."
+    },
+    {
+      label: "E-Mail Versand",
+      status: mailConfigured() ? "good" : "warn",
+      text: mailConfigured() ? "SMTP/API-Konfiguration erkannt." : "Aktuell über Mail-Client vorbereitet, produktiver Versand fehlt."
+    },
+    {
+      label: "Dokumentenarchiv",
+      status: archiveConfigured() ? "good" : "warn",
+      text: archiveConfigured() ? "Archivmodus ist hinterlegt." : "Revisionssichere Ablage später anbinden."
+    }
+  ];
+}
+
+function monitoringConfigured() {
+  return Boolean(process.env.MONITORING_URL || process.env.ALERT_EMAIL || process.env.APPLICATION_LOGGING === "true");
+}
+
+function mailConfigured() {
+  return Boolean(process.env.SMTP_HOST || process.env.MAIL_API_URL || process.env.MAIL_DESTINATION);
+}
+
+function archiveConfigured() {
+  return Boolean(process.env.ARCHIVE_DESTINATION || process.env.ARCHIVE_BUCKET || process.env.ARCHIVE_MODE === "compliant");
 }
 
 function readinessItems(storage, counts, scopes) {
@@ -640,6 +762,34 @@ function backupPayload(state, storage, req) {
     dataModel: storage.model || "local",
     checksum,
     data
+  };
+}
+
+function operationsReportPayload(state, storage, req) {
+  const summary = businessSummary(state, storage, req);
+  return {
+    exportType: "AUTOHAUS_HESSEN_OPERATIONS_REPORT",
+    generatedAt: new Date().toISOString(),
+    generatedBy: userName(req),
+    system: summary.system,
+    summary,
+    recommendedOwners: {
+      btp: "SAP/BTP Admin",
+      finance: "FI/CO-Berater oder Steuerbüro",
+      salesInventory: "SD/MM-Berater",
+      security: "Security-/Berechtigungsberater",
+      development: "BTP/ABAP/RAP-Entwickler",
+      dataProtection: "Geschäftsführung / Datenschutzbeauftragter"
+    },
+    nextSteps: [
+      "Trial/Free-Tier durch produktiven BTP-Subaccount ersetzen.",
+      "BTP-Rollensammlungen fachlich freigeben und Benutzern zuordnen.",
+      "S/4HANA, SAP FI oder DATEV für offizielle Buchhaltung anbinden.",
+      "Automatische Backups, Monitoring und Alarmierung aktivieren.",
+      "DSGVO-Konzept, Löschfristen und Auftragsverarbeitung rechtlich prüfen.",
+      "E-Mail-Versand und revisionssicheres Dokumentenarchiv anbinden.",
+      "Test-, Freigabe- und Rollback-Prozess vor Produktivstart definieren."
+    ]
   };
 }
 
@@ -696,6 +846,18 @@ async function handleApi(req, res) {
     const stored = await writeState(state);
     const storage = await storageHealth();
     send(req, res, 200, backupPayload(stored, storage, req));
+    return;
+  }
+
+  if (url.pathname === "/api/admin/ops-report" && req.method === "GET") {
+    if (!canUseAdminEndpoint(req)) {
+      send(req, res, 403, { error: "Nur Admin oder Chef duerfen den Betriebsbericht erstellen." });
+      return;
+    }
+    audit(state, req, "Betriebsbericht erstellt", "Produktiv-Checkliste und Integrationsstatus wurden exportiert.");
+    const stored = await writeState(state);
+    const storage = await storageHealth();
+    send(req, res, 200, operationsReportPayload(stored, storage, req));
     return;
   }
 
@@ -760,7 +922,13 @@ async function handleApi(req, res) {
 
 const server = http.createServer((req, res) => {
   handleApi(req, res).catch(error => {
-    send(req, res, error.status || 500, { error: error.message || "Interner ERP-Fehler." });
+    send(req, res, error.status || 500, {
+      error: error.message || "Interner ERP-Fehler.",
+      requestId: "REQ-" + Date.now() + "-" + crypto.randomBytes(3).toString("hex"),
+      time: new Date().toISOString(),
+      path: req.url,
+      supportHint: "Bitte Uhrzeit und Request-ID an den Autohaus-HESSEN-Admin weitergeben."
+    });
   });
 });
 
