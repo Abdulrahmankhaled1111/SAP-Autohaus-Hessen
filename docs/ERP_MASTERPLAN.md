@@ -4,6 +4,10 @@
 
 Die Autohaus HESSEN Management Suite wird zu einem eigenen ERP-System auf SAP BTP. Die Oberfläche bleibt die zentrale Arbeitsfläche für Abteilungen wie Geschäftsführung, Verkauf, Finanzen, Personal, Service, Dokumente und Tickets. Darunter entsteht ein stabiler Backend-Kern mit API, zentralen Daten, Rollen, Protokollierung und später SAP HANA Cloud.
 
+## Projektdokumente
+
+- `docs/SAP_FIORI_S4HANA_KONZEPT_AUTOHAUS_HESSEN.md` beschreibt das angepasste SAP-Fiori- und S/4HANA-Zielkonzept fuer Autohaus HESSEN.
+
 ## Aktueller Ausbau
 
 - SAP BTP Cloud Foundry hostet die Anwendung.
