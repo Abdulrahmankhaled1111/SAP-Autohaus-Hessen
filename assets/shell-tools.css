@@ -32,6 +32,15 @@
   transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
 }
 
+.shell-icon-button {
+  width: 34px;
+  height: 34px;
+  border-color: transparent;
+  background: transparent;
+  color: #dce9f7;
+  box-shadow: none;
+}
+
 .shell-icon-button:hover,
 .shell-icon-button:focus,
 .shell-state-button:hover,
@@ -42,8 +51,8 @@
 .shell-state-button[aria-expanded="true"],
 .shell-avatar[aria-expanded="true"] {
   outline: 0;
-  border-color: rgba(255, 255, 255, 0.45);
-  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.12);
   transform: translateY(-1px);
 }
 
@@ -54,6 +63,13 @@
   background: #ffffff;
   color: #344054;
   box-shadow: 0 2px 8px rgba(25, 36, 52, 0.06);
+}
+
+.topbar .shell-icon-button {
+  border-color: transparent;
+  background: transparent;
+  color: #344054;
+  box-shadow: none;
 }
 
 .topbar .shell-icon-button:hover,
@@ -191,27 +207,16 @@
 }
 
 .shell-bell-icon::before {
-  content: "";
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  left: 3px;
-  top: 2px;
-  border: 2px solid currentColor;
-  border-bottom: 0;
-  border-radius: 10px 10px 4px 4px;
+  content: none;
 }
 
 .shell-bell-icon::after {
   content: "";
   position: absolute;
-  width: 13px;
-  height: 2px;
-  left: 2px;
-  top: 14px;
-  border-radius: 999px;
+  inset: 0;
   background: currentColor;
-  box-shadow: 5px 3px 0 -1px currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.3 21a2 2 0 0 0 3.4 0'/%3E%3Cpath d='M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9'/%3E%3C/svg%3E") center / 20px 20px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.3 21a2 2 0 0 0 3.4 0'/%3E%3Cpath d='M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9'/%3E%3C/svg%3E") center / 20px 20px no-repeat;
 }
 
 .shell-notification-button {
@@ -220,10 +225,10 @@
 
 .shell-badge {
   position: absolute;
-  top: -3px;
-  right: -3px;
-  min-width: 18px;
-  height: 18px;
+  top: -1px;
+  right: -2px;
+  min-width: 17px;
+  height: 17px;
   border: 2px solid #1f2f46;
   border-radius: 999px;
   display: grid;
@@ -231,7 +236,7 @@
   padding: 0 4px;
   background: #b42318;
   color: #ffffff;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 850;
   line-height: 1;
 }
@@ -313,9 +318,10 @@
   appearance: none;
   -webkit-appearance: none;
   position: relative;
-  width: 46px;
-  height: 46px;
-  min-height: 46px;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 999px;
   color: #ffffff;
@@ -335,7 +341,7 @@
 .session-button::after {
   content: "";
   position: absolute;
-  inset: 5px;
+  inset: 7px;
   border-radius: 999px;
   background: rgba(31, 47, 70, 0.92);
 }
@@ -378,16 +384,27 @@
   position: relative;
   z-index: 1;
   width: 100%;
-  min-height: auto;
+  height: 100%;
+  min-height: 100%;
   display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
   place-items: center;
+  align-items: center;
+  justify-items: center;
+  gap: 0;
   padding: 0;
+  text-align: center;
 }
 
 .session-button strong {
   color: #ffffff;
-  font-size: 10px;
+  display: block;
+  width: 100%;
+  font-size: 9.5px;
   line-height: 1;
+  letter-spacing: 0;
+  text-align: center;
   font-variant-numeric: tabular-nums;
 }
 
@@ -558,7 +575,7 @@
 .menu-action:hover,
 .menu-action:focus {
   outline: 0;
-  border-color: #9db2c8;
+  border-color: rgba(10, 110, 209, 0.1);
   background: #eef6ff;
 }
 
