@@ -520,6 +520,40 @@
 
 .notification-item {
   border-left: 4px solid var(--shell-menu-blue);
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease, background 0.16s ease;
+}
+
+.notification-item:hover,
+.notification-item:focus {
+  outline: 0;
+  background: #eef6ff;
+  border-color: #a8bfda;
+  box-shadow: 0 6px 16px rgba(31, 47, 70, 0.1);
+  transform: translateY(-1px);
+}
+
+.notification-item em {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 8px;
+  color: var(--shell-menu-blue);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 850;
+}
+
+.notification-item em::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  margin-left: 6px;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  transform: rotate(45deg);
 }
 
 .notification-item.warning {

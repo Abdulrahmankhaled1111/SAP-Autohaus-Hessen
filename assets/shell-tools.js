@@ -275,6 +275,12 @@
       items.push({ tone: "warning", title: openTickets + " offene Tickets", text: "Service- und interne Tickets nach Priorität bearbeiten." });
     }
 
+    items.forEach(function (item) {
+      if (item.title.indexOf("Rechnungen") > -1) item.href = "app.html?workspace=backoffice&app=finance#finance";
+      if (item.title.indexOf("Aufgaben") > -1) item.href = "app.html?workspace=workflow&app=tasks#tasks";
+      if (item.title.indexOf("Tickets") > -1) item.href = "app.html?workspace=workflow&app=tickets#tickets";
+    });
+
     var count = openInvoices + openTasks + openTickets;
     setNotificationCount(count);
     setTextAll("[data-shell-notification-summary]", count ? count + " offene Hinweise im System" : "Keine offenen Hinweise");
@@ -287,7 +293,7 @@
     }
 
     list.innerHTML = items.map(function (item) {
-      return '<div class="notification-item ' + item.tone + '"><span>' + escapeHtml(item.title) + '</span><strong>' + escapeHtml(item.text) + '</strong></div>';
+      return '<a class="notification-item ' + item.tone + '" href="' + escapeHtml(item.href || "app.html") + '"><span>' + escapeHtml(item.title) + '</span><strong>' + escapeHtml(item.text) + '</strong><em>Öffnen</em></a>';
     }).join("");
   }
 

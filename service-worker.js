@@ -1,4 +1,4 @@
-const CACHE_NAME = "autohaus-hessen-pwa-v20260624-profile-ring";
+const CACHE_NAME = "autohaus-hessen-pwa-v20260624-notification-links";
 
 const STATIC_ASSETS = [
   "/",
