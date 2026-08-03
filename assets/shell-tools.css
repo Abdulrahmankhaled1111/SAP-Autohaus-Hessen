@@ -278,6 +278,56 @@
   font-weight: 850;
 }
 
+.shell-search-popover {
+  position: fixed;
+  z-index: 10002;
+  width: min(380px, calc(100vw - 28px));
+  border: 1px solid var(--shell-menu-line);
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--shell-menu-ink);
+  box-shadow: var(--shell-menu-shadow);
+  padding: 8px;
+}
+
+.shell-search-popover[hidden] {
+  display: none;
+}
+
+.shell-search-field {
+  display: block;
+}
+
+.shell-search-caption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.shell-search-field input {
+  width: 100%;
+  min-height: 54px;
+  border: 2px solid #1d2939;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #1f2a37;
+  padding: 0 15px;
+  font: inherit;
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: 0;
+  outline: 0;
+}
+
+.shell-search-field input:focus {
+  border-color: var(--shell-menu-blue);
+  box-shadow: 0 0 0 3px rgba(10, 110, 209, 0.16);
+}
+
 .shell-system-icon::before,
 .shell-system-icon::after {
   content: "";
@@ -640,5 +690,11 @@
     left: 12px;
     right: 12px;
     width: auto;
+  }
+
+  .shell-search-popover {
+    left: 12px !important;
+    right: 12px;
+    width: auto !important;
   }
 }

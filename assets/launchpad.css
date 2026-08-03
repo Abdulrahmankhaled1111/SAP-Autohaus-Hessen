@@ -487,3 +487,22 @@ h2 {
     border-bottom: 1px solid var(--line);
   }
 }
+
+.workspace-head .search-wrap {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.workspace-head .search-wrap input {
+  width: 1px;
+  min-height: 1px;
+  border: 0;
+  padding: 0;
+}

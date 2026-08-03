@@ -2,6 +2,8 @@
   "use strict";
 
   var activeMenu = null;
+  var activeSearchButton = null;
+  var activeSearchTarget = null;
 
   window.AUTOHAUS_SHELL = {
     checkSystem: checkSystemStatus,
@@ -33,17 +35,14 @@
 
   function bindSearchButtons() {
     document.querySelectorAll("[data-shell-search]").forEach(function (button) {
-      button.addEventListener("click", function () {
-        var target = findSearchTarget();
+      button.addEventListener("click", function (event) {
+        event.stopPropagation();
+        var target = findSearchTarget({ allowHiddenLaunchpad: true });
         if (!target) {
           showToast("In dieser Ansicht ist keine Suche verfügbar.");
           return;
         }
-        target.scrollIntoView({ block: "center", behavior: "smooth" });
-        window.setTimeout(function () {
-          target.focus();
-          if (target.select) target.select();
-        }, 160);
+        openSearchPopover(button, target);
       });
     });
   }
@@ -60,12 +59,21 @@
   function bindGlobalClose() {
     document.addEventListener("click", function (event) {
       if (event.target && event.target.closest && event.target.closest(".shell-tool")) return;
+      if (event.target && event.target.closest && event.target.closest(".shell-search-popover")) return;
+      if (event.target && event.target.closest && event.target.closest("[data-shell-search]")) return;
+      closeSearchPopover();
       closeMenus();
     });
 
     document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape") closeMenus();
+      if (event.key === "Escape") {
+        closeSearchPopover();
+        closeMenus();
+      }
     });
+
+    window.addEventListener("resize", positionActiveSearchPopover);
+    window.addEventListener("scroll", positionActiveSearchPopover, true);
   }
 
   function toggleMenu(button, menu) {
@@ -87,8 +95,86 @@
     activeMenu = null;
   }
 
-  function findSearchTarget() {
+  function openSearchPopover(button, target) {
+    closeMenus();
+    activeSearchButton = button;
+    activeSearchTarget = target;
+
+    var popover = ensureSearchPopover();
+    var input = popover.querySelector("input");
+    input.value = target.value || "";
+    popover.hidden = false;
+    button.setAttribute("aria-expanded", "true");
+    positionSearchPopover(button, popover);
+
+    window.setTimeout(function () {
+      input.focus();
+      if (input.select) input.select();
+    }, 40);
+  }
+
+  function ensureSearchPopover() {
+    var popover = document.getElementById("shellSearchPopover");
+    if (popover) return popover;
+
+    popover = document.createElement("div");
+    popover.id = "shellSearchPopover";
+    popover.className = "shell-search-popover";
+    popover.hidden = true;
+    popover.innerHTML = '<label class="shell-search-field"><span class="shell-search-caption">App suchen</span><input type="search" placeholder="App suchen" autocomplete="off"></label>';
+    document.body.appendChild(popover);
+
+    var input = popover.querySelector("input");
+    input.addEventListener("input", syncSearchInput);
+    input.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") openFirstVisibleTile();
+    });
+
+    return popover;
+  }
+
+  function syncSearchInput(event) {
+    if (!activeSearchTarget) return;
+    activeSearchTarget.value = event.target.value;
+    activeSearchTarget.dispatchEvent(new Event("input", { bubbles: true }));
+    activeSearchTarget.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  function openFirstVisibleTile() {
+    if (activeSearchTarget && activeSearchTarget.id === "tileSearch") {
+      var tile = document.querySelector(".fiori-tile:not([hidden])");
+      if (tile) tile.click();
+    }
+  }
+
+  function closeSearchPopover() {
+    var popover = document.getElementById("shellSearchPopover");
+    if (popover) popover.hidden = true;
+    if (activeSearchButton) activeSearchButton.setAttribute("aria-expanded", "false");
+    activeSearchButton = null;
+    activeSearchTarget = null;
+  }
+
+  function positionActiveSearchPopover() {
+    var popover = document.getElementById("shellSearchPopover");
+    if (!popover || popover.hidden || !activeSearchButton) return;
+    positionSearchPopover(activeSearchButton, popover);
+  }
+
+  function positionSearchPopover(button, popover) {
+    var rect = button.getBoundingClientRect();
+    var width = Math.min(380, window.innerWidth - 28);
+    var left = Math.max(14, Math.min(window.innerWidth - width - 14, rect.right - width));
+    var top = Math.min(window.innerHeight - 78, rect.bottom + 10);
+    popover.style.width = width + "px";
+    popover.style.left = left + "px";
+    popover.style.top = Math.max(12, top) + "px";
+  }
+
+  function findSearchTarget(options) {
+    options = options || {};
     var launchpadSearch = document.getElementById("tileSearch");
+    if (options.allowHiddenLaunchpad && launchpadSearch && !launchpadSearch.disabled) return launchpadSearch;
     if (isVisible(launchpadSearch)) return launchpadSearch;
 
     var activeView = document.querySelector(".view.active");
@@ -97,7 +183,8 @@
       if (isVisible(viewSearch)) return viewSearch;
     }
 
-    return document.querySelector('input[type="search"], input[id$="Search"]');
+    var fallbackSearch = document.querySelector('input[type="search"], input[id$="Search"]');
+    return isVisible(fallbackSearch) ? fallbackSearch : null;
   }
 
   function isVisible(element) {
