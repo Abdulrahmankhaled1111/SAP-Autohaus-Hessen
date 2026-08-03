@@ -1,4 +1,4 @@
-const CACHE_NAME = "autohaus-hessen-pwa-v20260624-production-readiness";
+const CACHE_NAME = "autohaus-hessen-pwa-v20260624-shell-support";
 
 const STATIC_ASSETS = [
   "/",
@@ -13,6 +13,8 @@ const STATIC_ASSETS = [
   "/assets/launchpad.js",
   "/assets/development-mode.js",
   "/assets/session.js",
+  "/assets/shell-tools.css",
+  "/assets/shell-tools.js",
   "/assets/pwa.js",
   "/assets/icons/favicon.svg",
   "/assets/icons/icon-192.png",

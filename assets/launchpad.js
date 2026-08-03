@@ -32,16 +32,20 @@
   function loadUser() {
     if (window.location.hostname.indexOf("hana.ondemand.com") === -1) {
       setText("currentUser", "Lokaler Benutzer");
+      setShellUser("Lokaler Benutzer");
       return;
     }
     fetch("/user-api/currentUser", { credentials: "same-origin" })
       .then(function (response) { return response.ok ? response.json() : null; })
       .then(function (user) {
         if (!user) return;
-        setText("currentUser", user.email || user.mail || user.name || user.userName || "SAP Benutzer");
+        var userName = user.email || user.mail || user.name || user.userName || "SAP Benutzer";
+        setText("currentUser", userName);
+        setShellUser(userName);
       })
       .catch(function () {
         setText("currentUser", "SAP Benutzer");
+        setShellUser("SAP Benutzer");
       });
   }
 
@@ -116,6 +120,12 @@
   function setText(id, value) {
     var element = document.getElementById(id);
     if (element) element.textContent = value;
+  }
+
+  function setShellUser(name) {
+    if (window.AUTOHAUS_SHELL && window.AUTOHAUS_SHELL.setUser) {
+      window.AUTOHAUS_SHELL.setUser(name, "");
+    }
   }
 
   function setOverviewValue(id, value) {

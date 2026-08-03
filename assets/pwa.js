@@ -54,8 +54,10 @@
     headerInstallButton.textContent = "App installieren";
     headerInstallButton.addEventListener("click", handleInstallClick);
 
-    const logoutLink = actions.querySelector('a[href="/logout"], #logoutButton');
-    actions.insertBefore(headerInstallButton, logoutLink || actions.firstChild);
+    const directChildren = Array.from(actions.children);
+    const directLogout = directChildren.find((child) => child.matches && child.matches('a[href="/logout"], #logoutButton'));
+    const directSearch = directChildren.find((child) => child.matches && child.matches("[data-shell-search]"));
+    actions.insertBefore(headerInstallButton, directLogout || directSearch || actions.firstChild);
   }
 
   function showInstallButton(label) {

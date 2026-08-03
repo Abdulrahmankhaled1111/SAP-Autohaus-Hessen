@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Autohaus HESSEN - Fiori App</title>
-  <link rel="manifest" href="manifest.webmanifest?v=20260624-production-readiness">
+  <link rel="manifest" href="manifest.webmanifest?v=20260624-shell-support">
   <meta name="theme-color" content="#0f6ab4">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -12,7 +12,8 @@
   <meta name="apple-mobile-web-app-title" content="Autohaus HESSEN">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="assets/app.css?v=20260624-production-readiness">
+  <link rel="stylesheet" href="assets/app.css?v=20260624-shell-support">
+  <link rel="stylesheet" href="assets/shell-tools.css?v=20260624-shell-support">
 </head>
 <body>
   <div class="app-shell">
@@ -57,11 +58,77 @@
               <option value="hr">Personal</option>
             </select>
           </label>
-          <span class="user-chip" id="activeRole">Admin</span>
-          <button class="btn" id="launchpadButton">Launchpad</button>
-          <button class="btn" id="logoutButton">Abmelden</button>
           <button class="btn" id="exportData">Daten exportieren</button>
           <button class="btn danger" id="resetDemo">Demo zurücksetzen</button>
+          <button class="shell-icon-button" type="button" data-shell-search aria-label="Suche öffnen" title="Suche">
+            <span class="shell-search-icon" aria-hidden="true"></span>
+          </button>
+          <div class="shell-tool">
+            <button class="shell-icon-button" id="shellSupportButton" type="button" data-shell-menu-button aria-label="Support öffnen" aria-controls="shellSupportMenu" aria-expanded="false" title="Hilfe und Support">
+              <span class="shell-support-icon" aria-hidden="true">?</span>
+            </button>
+            <div class="shell-menu shell-support-menu" id="shellSupportMenu" role="dialog" aria-label="Supportkontakte" hidden>
+              <div class="shell-menu-head">
+                <strong>Supportkontakte</strong>
+                <span>Autohaus HESSEN ERP Hilfe</span>
+              </div>
+              <div class="support-list">
+                <div class="support-contact">
+                  <span class="support-contact-mark">IT</span>
+                  <div>
+                    <strong>IT-Support</strong>
+                    <a href="mailto:support@autohaus-hessen.example">support@autohaus-hessen.example</a>
+                    <a href="tel:+496910020099">+49 69 100200-99</a>
+                    <span>Login, PWA, Fehler und Arbeitsplatz</span>
+                  </div>
+                </div>
+                <div class="support-contact">
+                  <span class="support-contact-mark">SAP</span>
+                  <div>
+                    <strong>SAP/BTP Admin</strong>
+                    <a href="mailto:btp-admin@autohaus-hessen.example">btp-admin@autohaus-hessen.example</a>
+                    <span>BTP-Rollen, Benutzer, HANA und Deployment</span>
+                  </div>
+                </div>
+                <div class="support-contact">
+                  <span class="support-contact-mark">ERP</span>
+                  <div>
+                    <strong>Fachlicher Support</strong>
+                    <a href="mailto:service@autohaus-hessen.example">service@autohaus-hessen.example</a>
+                    <span>Verkauf, Finanzen, Dokumente und Tickets</span>
+                  </div>
+                </div>
+              </div>
+              <p class="support-note">Bei einem Fehler bitte Bereich, Uhrzeit, Benutzer und kurze Beschreibung mitsenden.</p>
+              <div class="shell-menu-actions">
+                <a class="menu-action primary" href="app.html?workspace=workflow&app=tickets#tickets">Ticket erstellen</a>
+                <a class="menu-action" href="mailto:support@autohaus-hessen.example?subject=Autohaus%20HESSEN%20ERP%20Support">E-Mail öffnen</a>
+                <button class="menu-action" type="button" data-shell-copy="">Supportdaten kopieren</button>
+              </div>
+            </div>
+          </div>
+          <div class="shell-tool">
+            <button class="shell-avatar" id="shellProfileButton" type="button" data-shell-menu-button aria-label="Profil öffnen" aria-controls="shellProfileMenu" aria-expanded="false" title="Profil">
+              <span data-shell-user-initials>S</span>
+            </button>
+            <div class="shell-menu shell-profile-menu" id="shellProfileMenu" role="dialog" aria-label="Profil" hidden>
+              <div class="shell-menu-head">
+                <strong>Profil</strong>
+                <span>SAP/BTP Benutzer</span>
+              </div>
+              <div class="profile-card">
+                <span class="profile-avatar-large" data-shell-user-initials>S</span>
+                <div>
+                  <span class="profile-name" data-shell-user-name>SAP Benutzer</span>
+                  <span class="profile-meta" id="activeRole" data-shell-user-role>Admin</span>
+                </div>
+              </div>
+              <div class="profile-actions">
+                <button class="menu-action" type="button" id="launchpadButton">Launchpad öffnen</button>
+                <button class="menu-action primary" type="button" id="logoutButton">Abmelden</button>
+              </div>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -626,10 +693,11 @@
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div id="sideSheet" class="side-sheet-backdrop" hidden></div>
-  <script src="assets/development-mode.js?v=20260624-production-readiness"></script>
-  <script src="assets/app.js?v=20260624-production-readiness"></script>
-  <script src="assets/session.js?v=20260624-production-readiness"></script>
-  <script src="assets/pwa.js?v=20260624-production-readiness"></script>
+  <script src="assets/development-mode.js?v=20260624-shell-support"></script>
+  <script src="assets/shell-tools.js?v=20260624-shell-support"></script>
+  <script src="assets/app.js?v=20260624-shell-support"></script>
+  <script src="assets/session.js?v=20260624-shell-support"></script>
+  <script src="assets/pwa.js?v=20260624-shell-support"></script>
 </body>
 </html>
 

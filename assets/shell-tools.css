@@ -1,0 +1,326 @@
+:root {
+  --shell-menu-bg: #ffffff;
+  --shell-menu-line: #d7e0ea;
+  --shell-menu-ink: #1f2a37;
+  --shell-menu-muted: #667085;
+  --shell-menu-blue: #0a6ed1;
+  --shell-menu-shadow: 0 20px 46px rgba(16, 24, 40, 0.24);
+}
+
+.shell-tool {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.shell-icon-button,
+.shell-avatar {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #eaf4ff;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+}
+
+.shell-icon-button:hover,
+.shell-icon-button:focus,
+.shell-avatar:hover,
+.shell-avatar:focus,
+.shell-icon-button[aria-expanded="true"],
+.shell-avatar[aria-expanded="true"] {
+  outline: 0;
+  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.topbar .shell-icon-button,
+.topbar .shell-avatar {
+  border-color: #cad5e1;
+  background: #ffffff;
+  color: #344054;
+  box-shadow: 0 2px 8px rgba(25, 36, 52, 0.06);
+}
+
+.topbar .shell-icon-button:hover,
+.topbar .shell-icon-button:focus,
+.topbar .shell-avatar:hover,
+.topbar .shell-avatar:focus,
+.topbar .shell-icon-button[aria-expanded="true"],
+.topbar .shell-avatar[aria-expanded="true"] {
+  border-color: #9db2c8;
+  background: #eef6ff;
+}
+
+.shell-avatar {
+  background: #416fa9;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.topbar .shell-avatar {
+  background: #416fa9;
+  color: #ffffff;
+}
+
+.shell-search-icon,
+.shell-support-icon,
+.shell-system-icon {
+  width: 18px;
+  height: 18px;
+  position: relative;
+  display: inline-block;
+}
+
+.shell-search-icon::before {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  left: 1px;
+  top: 1px;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+}
+
+.shell-search-icon::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 2px;
+  right: 0;
+  bottom: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  transform: rotate(45deg);
+  transform-origin: center;
+}
+
+.shell-support-icon {
+  border: 2px solid currentColor;
+  border-radius: 999px;
+  text-align: center;
+  line-height: 14px;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.shell-system-icon::before,
+.shell-system-icon::after {
+  content: "";
+  position: absolute;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+}
+
+.shell-system-icon::before {
+  inset: 2px;
+}
+
+.shell-system-icon::after {
+  inset: 6px;
+  border-left-color: transparent;
+  border-right-color: transparent;
+}
+
+.shell-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 100;
+  width: min(380px, calc(100vw - 32px));
+  max-height: min(620px, calc(100vh - 96px));
+  overflow: auto;
+  border: 1px solid var(--shell-menu-line);
+  border-radius: 10px;
+  background: var(--shell-menu-bg);
+  color: var(--shell-menu-ink);
+  box-shadow: var(--shell-menu-shadow);
+  padding: 14px;
+}
+
+.shell-menu[hidden] {
+  display: none;
+}
+
+.shell-menu-head {
+  display: grid;
+  gap: 3px;
+  padding: 2px 2px 12px;
+  border-bottom: 1px solid var(--shell-menu-line);
+}
+
+.shell-menu-head strong {
+  font-size: 15px;
+}
+
+.shell-menu-head span {
+  color: var(--shell-menu-muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.support-list {
+  display: grid;
+  gap: 10px;
+  padding: 12px 0;
+}
+
+.support-contact {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 10px;
+  padding: 11px;
+  border: 1px solid #dce4ee;
+  border-radius: 8px;
+  background: #f8fbff;
+}
+
+.support-contact-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: #e8f3ff;
+  color: var(--shell-menu-blue);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.support-contact strong,
+.support-contact span,
+.support-contact a {
+  display: block;
+}
+
+.support-contact strong {
+  margin-bottom: 3px;
+}
+
+.support-contact span,
+.support-contact a,
+.profile-meta {
+  color: var(--shell-menu-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.support-contact a {
+  color: var(--shell-menu-blue);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.support-note {
+  margin: 0 0 12px;
+  color: var(--shell-menu-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.shell-menu-actions,
+.profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--shell-menu-line);
+}
+
+.menu-action {
+  min-height: 34px;
+  border: 1px solid #cad5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--shell-menu-ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 11px;
+  text-decoration: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.menu-action:hover,
+.menu-action:focus {
+  outline: 0;
+  border-color: #9db2c8;
+  background: #eef6ff;
+}
+
+.menu-action.primary {
+  border-color: var(--shell-menu-blue);
+  background: var(--shell-menu-blue);
+  color: #ffffff;
+}
+
+.profile-card {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 2px;
+}
+
+.profile-avatar-large {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #416fa9;
+  color: #ffffff;
+  font-weight: 850;
+}
+
+.profile-name {
+  display: block;
+  font-weight: 850;
+  word-break: break-word;
+}
+
+.shell-toast {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 10001;
+  width: min(380px, calc(100vw - 36px));
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #1d2d3e;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 16px 34px rgba(22, 33, 45, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.shell-toast.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 720px) {
+  .shell-menu {
+    position: fixed;
+    top: 74px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+  }
+}

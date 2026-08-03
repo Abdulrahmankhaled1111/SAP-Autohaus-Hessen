@@ -419,6 +419,7 @@
 
   function applyRole() {
     byId("activeRole").textContent = role().label;
+    updateShellProfile("", role().label);
     document.querySelectorAll("[data-view]").forEach(function (button) {
       var visible = canUseView(button.getAttribute("data-view"));
       button.hidden = !visible;
@@ -2550,11 +2551,19 @@
         applyRole();
         byId("activeRole").textContent = role().label + " · " + cloudUserName(user);
         updateRuntimeLabel();
+        updateShellProfile(cloudUserName(user), byId("activeRole").textContent);
       })
       .catch(function () {
         byId("activeRole").textContent = role().label;
         updateRuntimeLabel();
+        updateShellProfile("SAP Benutzer", byId("activeRole").textContent);
       });
+  }
+
+  function updateShellProfile(userName, roleLabel) {
+    if (window.AUTOHAUS_SHELL && window.AUTOHAUS_SHELL.setUser) {
+      window.AUTOHAUS_SHELL.setUser(userName || "", roleLabel || "");
+    }
   }
 
   function roleFromCloudUser(user) {
