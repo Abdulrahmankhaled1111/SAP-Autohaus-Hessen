@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Autohaus HESSEN - SAP Launchpad</title>
-  <link rel="manifest" href="manifest.webmanifest?v=20260624-gloss-dot">
+  <link rel="manifest" href="manifest.webmanifest?v=20260624-profile-ring">
   <meta name="theme-color" content="#0f6ab4">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -12,8 +12,8 @@
   <meta name="apple-mobile-web-app-title" content="Autohaus HESSEN">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="assets/launchpad.css?v=20260624-gloss-dot">
-  <link rel="stylesheet" href="assets/shell-tools.css?v=20260624-gloss-dot">
+  <link rel="stylesheet" href="assets/launchpad.css?v=20260624-profile-ring">
+  <link rel="stylesheet" href="assets/shell-tools.css?v=20260624-profile-ring">
 </head>
 <body>
   <div class="launchpad-shell">
@@ -26,22 +26,6 @@
         </div>
       </div>
       <div class="shell-actions" aria-label="Globale Aktionen">
-        <div class="shell-tool">
-          <button class="shell-state-button is-checking" id="systemStatus" type="button" data-shell-menu-button aria-label="System wird geprüft" aria-controls="shellSystemMenu" aria-expanded="false" title="System wird geprüft">
-            <span class="shell-state-icon" aria-hidden="true"></span>
-          </button>
-          <div class="shell-menu shell-system-menu" id="shellSystemMenu" role="dialog" aria-label="Systemstatus" hidden>
-            <div class="shell-menu-head">
-              <strong data-shell-system-title>System wird geprüft</strong>
-              <span data-shell-system-detail>API und Datenbank werden geprüft.</span>
-            </div>
-            <div class="system-status-grid">
-              <div><span>Frontend</span><strong>Launchpad aktiv</strong></div>
-              <div><span>Backend</span><strong data-shell-api-state>Prüfung läuft</strong></div>
-              <div><span>Datenbank</span><strong data-shell-db-state>Prüfung läuft</strong></div>
-            </div>
-          </div>
-        </div>
         <button class="session-button" id="sessionSecurity" type="button" aria-label="Sitzung verlängern" title="Sitzung verlängern">
           <span class="session-fill" id="sessionProgress" aria-hidden="true"></span>
           <span class="session-content">
@@ -113,7 +97,7 @@
           </div>
         </div>
         <div class="shell-tool">
-          <button class="shell-avatar" id="shellProfileButton" type="button" data-shell-menu-button aria-label="Profil öffnen" aria-controls="shellProfileMenu" aria-expanded="false" title="Profil">
+          <button class="shell-avatar is-checking" id="shellProfileButton" type="button" data-shell-menu-button data-shell-system-indicator aria-label="Profil öffnen" aria-controls="shellProfileMenu" aria-expanded="false" title="Profil">
             <span data-shell-user-initials>S</span>
           </button>
           <div class="shell-menu shell-profile-menu" id="shellProfileMenu" role="dialog" aria-label="Profil" hidden>
@@ -127,6 +111,18 @@
                 <span class="profile-name" id="currentUser" data-shell-user-name>SAP Benutzer</span>
                 <span class="profile-meta">Autohaus HESSEN ERP</span>
               </div>
+            </div>
+            <div class="profile-system-card">
+              <span class="profile-system-dot is-checking" data-shell-system-indicator aria-hidden="true"></span>
+              <div>
+                <strong data-shell-system-title>System wird geprüft</strong>
+                <span data-shell-system-detail>API und Datenbank werden geprüft.</span>
+              </div>
+            </div>
+            <div class="system-status-grid profile-system-grid">
+              <div><span>Frontend</span><strong>Launchpad aktiv</strong></div>
+              <div><span>Backend</span><strong data-shell-api-state>Prüfung läuft</strong></div>
+              <div><span>Datenbank</span><strong data-shell-db-state>Prüfung läuft</strong></div>
             </div>
             <div class="profile-actions">
               <a class="menu-action" href="app.html?app=audit#audit">Sicherheit öffnen</a>
@@ -270,10 +266,10 @@
       </section>
     </main>
   </div>
-  <script src="assets/development-mode.js?v=20260624-gloss-dot"></script>
-  <script src="assets/shell-tools.js?v=20260624-gloss-dot"></script>
-  <script src="assets/launchpad.js?v=20260624-gloss-dot"></script>
-  <script src="assets/session.js?v=20260624-gloss-dot"></script>
-  <script src="assets/pwa.js?v=20260624-gloss-dot"></script>
+  <script src="assets/development-mode.js?v=20260624-profile-ring"></script>
+  <script src="assets/shell-tools.js?v=20260624-profile-ring"></script>
+  <script src="assets/launchpad.js?v=20260624-profile-ring"></script>
+  <script src="assets/session.js?v=20260624-profile-ring"></script>
+  <script src="assets/pwa.js?v=20260624-profile-ring"></script>
 </body>
 </html>

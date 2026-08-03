@@ -198,8 +198,7 @@
   }
 
   function checkSystemStatus() {
-    var statusButton = document.getElementById("systemStatus");
-    if (!statusButton) return;
+    if (!systemIndicators().length) return;
 
     setSystemStatus("checking", "System wird geprüft", "API und Datenbank werden geprüft.", "Prüfung läuft", "Prüfung läuft");
     fetch(apiUrl("/health"), { credentials: "include" })
@@ -217,18 +216,29 @@
   }
 
   function setSystemStatus(state, title, detail, apiState, dbState) {
-    var button = document.getElementById("systemStatus");
-    if (!button) return;
+    var indicators = systemIndicators();
+    if (!indicators.length) return;
 
-    button.classList.remove("is-checking", "is-good", "is-error");
-    button.classList.add(state === "good" ? "is-good" : state === "error" ? "is-error" : "is-checking");
-    button.setAttribute("aria-label", title);
-    button.title = title;
+    indicators.forEach(function (indicator) {
+      var stateClass = state === "good" ? "is-good" : state === "error" ? "is-error" : "is-checking";
+      indicator.classList.remove("is-checking", "is-good", "is-error");
+      indicator.classList.add(stateClass);
+      indicator.setAttribute("data-system-state", stateClass.replace("is-", ""));
+      if (indicator.matches && indicator.matches("button")) {
+        var label = indicator.classList.contains("shell-avatar") ? "Profil öffnen, " + title : title;
+        indicator.setAttribute("aria-label", label);
+        indicator.title = label;
+      }
+    });
 
     setTextAll("[data-shell-system-title]", title);
     setTextAll("[data-shell-system-detail]", detail);
     setTextAll("[data-shell-api-state]", apiState || "");
     setTextAll("[data-shell-db-state]", dbState || "");
+  }
+
+  function systemIndicators() {
+    return Array.prototype.slice.call(document.querySelectorAll("#systemStatus, [data-shell-system-indicator]"));
   }
 
   function loadNotifications() {
