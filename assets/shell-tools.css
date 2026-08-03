@@ -92,36 +92,43 @@
 }
 
 .shell-state-button {
-  color: #ffffff;
-  background: #c47f00;
-  border-color: rgba(255, 255, 255, 0.24);
-  box-shadow: 0 0 0 4px rgba(196, 127, 0, 0.15);
+  width: 28px;
+  height: 28px;
+  color: #c47f00;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
 }
 
 .shell-state-button.is-good {
-  background: #137333;
-  box-shadow: 0 0 0 4px rgba(19, 115, 51, 0.17);
+  color: #137333;
+  background: transparent;
+  box-shadow: none;
 }
 
 .shell-state-button.is-error {
-  background: #b42318;
-  box-shadow: 0 0 0 4px rgba(180, 35, 24, 0.18);
+  color: #b42318;
+  background: transparent;
+  box-shadow: none;
 }
 
 .topbar .shell-state-button {
-  color: #ffffff;
-  background: #c47f00;
-  border-color: rgba(196, 127, 0, 0.5);
+  color: #c47f00;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
 }
 
 .topbar .shell-state-button.is-good {
-  background: #137333;
-  border-color: rgba(19, 115, 51, 0.5);
+  color: #137333;
+  background: transparent;
+  border-color: transparent;
 }
 
 .topbar .shell-state-button.is-error {
-  background: #b42318;
-  border-color: rgba(180, 35, 24, 0.55);
+  color: #b42318;
+  background: transparent;
+  border-color: transparent;
 }
 
 .topbar .shell-avatar {
@@ -140,70 +147,17 @@
   display: inline-block;
 }
 
-.shell-state-icon::before {
-  content: "";
-  position: absolute;
-  inset: 2px;
-  border: 2px solid currentColor;
-  border-radius: 999px;
-}
-
-.shell-state-button.is-checking .shell-state-icon::after {
-  content: "";
-  position: absolute;
-  width: 7px;
-  height: 7px;
-  left: 5px;
-  top: 5px;
+.shell-state-icon {
+  width: 12px;
+  height: 12px;
   border-radius: 999px;
   background: currentColor;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.24);
+  box-shadow: none;
 }
 
-.shell-state-button.is-good .shell-state-icon::before {
-  width: 11px;
-  height: 6px;
-  left: 3px;
-  top: 4px;
-  right: auto;
-  bottom: auto;
-  border: 0;
-  border-left: 3px solid currentColor;
-  border-bottom: 3px solid currentColor;
-  border-radius: 0;
-  transform: rotate(-45deg);
-}
-
-.shell-state-button.is-good .shell-state-icon::after {
-  content: "";
-  position: absolute;
-  inset: 1px;
-  border: 2px solid currentColor;
-  border-radius: 999px;
-  opacity: 0.25;
-}
-
-.shell-state-button.is-error .shell-state-icon::before,
-.shell-state-button.is-error .shell-state-icon::after {
-  content: "";
-  position: absolute;
-  width: 14px;
-  height: 3px;
-  left: 2px;
-  top: 8px;
-  right: auto;
-  bottom: auto;
-  border: 0;
-  border-radius: 999px;
-  background: currentColor;
-}
-
-.shell-state-button.is-error .shell-state-icon::before {
-  transform: rotate(45deg);
-}
-
-.shell-state-button.is-error .shell-state-icon::after {
-  transform: rotate(-45deg);
+.shell-state-icon::before,
+.shell-state-icon::after {
+  content: none;
 }
 
 .shell-bell-icon::before {
