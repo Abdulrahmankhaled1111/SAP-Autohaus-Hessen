@@ -14,6 +14,7 @@
 }
 
 .shell-icon-button,
+.shell-state-button,
 .shell-avatar {
   appearance: none;
   -webkit-appearance: none;
@@ -33,9 +34,12 @@
 
 .shell-icon-button:hover,
 .shell-icon-button:focus,
+.shell-state-button:hover,
+.shell-state-button:focus,
 .shell-avatar:hover,
 .shell-avatar:focus,
 .shell-icon-button[aria-expanded="true"],
+.shell-state-button[aria-expanded="true"],
 .shell-avatar[aria-expanded="true"] {
   outline: 0;
   border-color: rgba(255, 255, 255, 0.45);
@@ -44,6 +48,7 @@
 }
 
 .topbar .shell-icon-button,
+.topbar .shell-state-button,
 .topbar .shell-avatar {
   border-color: #cad5e1;
   background: #ffffff;
@@ -53,9 +58,12 @@
 
 .topbar .shell-icon-button:hover,
 .topbar .shell-icon-button:focus,
+.topbar .shell-state-button:hover,
+.topbar .shell-state-button:focus,
 .topbar .shell-avatar:hover,
 .topbar .shell-avatar:focus,
 .topbar .shell-icon-button[aria-expanded="true"],
+.topbar .shell-state-button[aria-expanded="true"],
 .topbar .shell-avatar[aria-expanded="true"] {
   border-color: #9db2c8;
   background: #eef6ff;
@@ -67,6 +75,39 @@
   border-color: rgba(255, 255, 255, 0.18);
 }
 
+.shell-state-button {
+  color: #ffffff;
+  background: #c47f00;
+  border-color: rgba(255, 255, 255, 0.24);
+  box-shadow: 0 0 0 4px rgba(196, 127, 0, 0.15);
+}
+
+.shell-state-button.is-good {
+  background: #137333;
+  box-shadow: 0 0 0 4px rgba(19, 115, 51, 0.17);
+}
+
+.shell-state-button.is-error {
+  background: #b42318;
+  box-shadow: 0 0 0 4px rgba(180, 35, 24, 0.18);
+}
+
+.topbar .shell-state-button {
+  color: #ffffff;
+  background: #c47f00;
+  border-color: rgba(196, 127, 0, 0.5);
+}
+
+.topbar .shell-state-button.is-good {
+  background: #137333;
+  border-color: rgba(19, 115, 51, 0.5);
+}
+
+.topbar .shell-state-button.is-error {
+  background: #b42318;
+  border-color: rgba(180, 35, 24, 0.55);
+}
+
 .topbar .shell-avatar {
   background: #416fa9;
   color: #ffffff;
@@ -74,11 +115,129 @@
 
 .shell-search-icon,
 .shell-support-icon,
-.shell-system-icon {
+.shell-system-icon,
+.shell-state-icon,
+.shell-bell-icon {
   width: 18px;
   height: 18px;
   position: relative;
   display: inline-block;
+}
+
+.shell-state-icon::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+}
+
+.shell-state-button.is-checking .shell-state-icon::after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  left: 5px;
+  top: 5px;
+  border-radius: 999px;
+  background: currentColor;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.24);
+}
+
+.shell-state-button.is-good .shell-state-icon::before {
+  width: 11px;
+  height: 6px;
+  left: 3px;
+  top: 4px;
+  right: auto;
+  bottom: auto;
+  border: 0;
+  border-left: 3px solid currentColor;
+  border-bottom: 3px solid currentColor;
+  border-radius: 0;
+  transform: rotate(-45deg);
+}
+
+.shell-state-button.is-good .shell-state-icon::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+  opacity: 0.25;
+}
+
+.shell-state-button.is-error .shell-state-icon::before,
+.shell-state-button.is-error .shell-state-icon::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 3px;
+  left: 2px;
+  top: 8px;
+  right: auto;
+  bottom: auto;
+  border: 0;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.shell-state-button.is-error .shell-state-icon::before {
+  transform: rotate(45deg);
+}
+
+.shell-state-button.is-error .shell-state-icon::after {
+  transform: rotate(-45deg);
+}
+
+.shell-bell-icon::before {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  left: 3px;
+  top: 2px;
+  border: 2px solid currentColor;
+  border-bottom: 0;
+  border-radius: 10px 10px 4px 4px;
+}
+
+.shell-bell-icon::after {
+  content: "";
+  position: absolute;
+  width: 13px;
+  height: 2px;
+  left: 2px;
+  top: 14px;
+  border-radius: 999px;
+  background: currentColor;
+  box-shadow: 5px 3px 0 -1px currentColor;
+}
+
+.shell-notification-button {
+  position: relative;
+}
+
+.shell-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 18px;
+  height: 18px;
+  border: 2px solid #1f2f46;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  padding: 0 4px;
+  background: #b42318;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.topbar .shell-badge {
+  border-color: #ffffff;
 }
 
 .shell-search-icon::before {
@@ -146,6 +305,148 @@
   color: var(--shell-menu-ink);
   box-shadow: var(--shell-menu-shadow);
   padding: 14px;
+}
+
+.session-button {
+  --session-percent: 100%;
+  --session-ring: rgba(255, 255, 255, 0.75);
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  width: 46px;
+  height: 46px;
+  min-height: 46px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  color: #ffffff;
+  background:
+    conic-gradient(var(--session-ring) var(--session-percent), rgba(255, 255, 255, 0.14) 0),
+    rgba(255, 255, 255, 0.1);
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 850;
+  box-shadow: none;
+}
+
+.session-button::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: 999px;
+  background: rgba(31, 47, 70, 0.92);
+}
+
+.topbar .session-button {
+  --session-ring: #0a6ed1;
+  color: #ffffff;
+  border-color: #cad5e1;
+  background:
+    conic-gradient(var(--session-ring) var(--session-percent), #d7e0ea 0),
+    #ffffff;
+  box-shadow: 0 2px 8px rgba(25, 36, 52, 0.06);
+}
+
+.topbar .session-button::after {
+  background: #ffffff;
+}
+
+.session-button:hover,
+.session-button:focus {
+  outline: 0;
+  transform: translateY(-1px);
+}
+
+.session-button.warning {
+  --session-ring: #c47f00;
+}
+
+.session-button.danger {
+  --session-ring: #b42318;
+}
+
+.session-fill,
+.session-lock,
+.session-label {
+  display: none;
+}
+
+.session-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: auto;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.session-button strong {
+  color: #ffffff;
+  font-size: 10px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.topbar .session-button strong {
+  color: #1f2a37;
+}
+
+.system-status-grid {
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+}
+
+.system-status-grid div,
+.notification-item,
+.notification-empty {
+  border: 1px solid #dce4ee;
+  border-radius: 8px;
+  background: #f8fbff;
+  padding: 10px 11px;
+}
+
+.system-status-grid span,
+.notification-item span {
+  display: block;
+  color: var(--shell-menu-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.system-status-grid strong,
+.notification-item strong {
+  display: block;
+  margin-top: 2px;
+  color: var(--shell-menu-ink);
+  font-size: 13px;
+}
+
+.notification-list {
+  display: grid;
+  gap: 9px;
+  padding-top: 12px;
+}
+
+.notification-item {
+  border-left: 4px solid var(--shell-menu-blue);
+}
+
+.notification-item.warning {
+  border-left-color: #c47f00;
+}
+
+.notification-item.danger {
+  border-left-color: #b42318;
+}
+
+.notification-empty {
+  color: var(--shell-menu-muted);
+  font-size: 13px;
 }
 
 .shell-menu[hidden] {

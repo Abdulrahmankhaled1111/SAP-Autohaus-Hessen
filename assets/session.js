@@ -82,6 +82,8 @@
     button.classList.toggle("danger", Boolean(isLoggingOut));
     label.textContent = isLoggingOut ? "Abmeldung" : Date.now() < labelOverrideUntil ? "verlängert" : warning ? "läuft ab" : "Sitzung";
     countdown.textContent = formatDuration(remaining);
+    button.style.setProperty("--session-percent", percent + "%");
+    button.title = "Sitzung aktiv: " + formatDuration(remaining) + " verbleibend. Anklicken zum Verlängern.";
     progress.style.width = percent + "%";
   }
 

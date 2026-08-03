@@ -4,7 +4,9 @@
   var activeMenu = null;
 
   window.AUTOHAUS_SHELL = {
+    checkSystem: checkSystemStatus,
     setUser: setUser,
+    setSystemStatus: setSystemStatus,
     showToast: showToast
   };
 
@@ -14,6 +16,8 @@
     bindCopyButtons();
     bindGlobalClose();
     initializeUser();
+    checkSystemStatus();
+    loadNotifications();
   });
 
   function bindMenuButtons() {
@@ -106,6 +110,131 @@
     setUser(name, "");
   }
 
+  function checkSystemStatus() {
+    var statusButton = document.getElementById("systemStatus");
+    if (!statusButton) return;
+
+    setSystemStatus("checking", "System wird geprüft", "API und Datenbank werden geprüft.", "Prüfung läuft", "Prüfung läuft");
+    fetch(apiUrl("/health"), { credentials: "include" })
+      .then(function (response) {
+        if (!response.ok) throw new Error("System nicht erreichbar");
+        return response.json();
+      })
+      .then(function (health) {
+        var dbState = health && health.database === "connected" ? "HANA verbunden" : "API bereit";
+        setSystemStatus("good", "System geprüft", "Die Anwendung ist erreichbar.", "API erreichbar", dbState);
+      })
+      .catch(function () {
+        setSystemStatus("error", "Systemfehler", "API oder Datenbank ist aktuell nicht erreichbar.", "Fehler", "Nicht erreichbar");
+      });
+  }
+
+  function setSystemStatus(state, title, detail, apiState, dbState) {
+    var button = document.getElementById("systemStatus");
+    if (!button) return;
+
+    button.classList.remove("is-checking", "is-good", "is-error");
+    button.classList.add(state === "good" ? "is-good" : state === "error" ? "is-error" : "is-checking");
+    button.setAttribute("aria-label", title);
+    button.title = title;
+
+    setTextAll("[data-shell-system-title]", title);
+    setTextAll("[data-shell-system-detail]", detail);
+    setTextAll("[data-shell-api-state]", apiState || "");
+    setTextAll("[data-shell-db-state]", dbState || "");
+  }
+
+  function loadNotifications() {
+    var list = document.querySelector("[data-shell-notification-list]");
+    if (!list) return;
+
+    setNotificationLoading();
+    fetch(apiUrl("/admin/summary"), { credentials: "include" })
+      .then(function (response) {
+        if (!response.ok) throw new Error("Benachrichtigungen nicht erreichbar");
+        return response.json();
+      })
+      .then(renderNotifications)
+      .catch(function () {
+        renderNotifications(localNotificationSummary());
+      });
+  }
+
+  function renderNotifications(summary) {
+    var finance = summary && summary.finance ? summary.finance : {};
+    var workflow = summary && summary.workflow ? summary.workflow : {};
+    var openInvoices = numberOrZero(finance.openInvoices);
+    var openTasks = numberOrZero(workflow.openTasks);
+    var openTickets = numberOrZero(workflow.openTickets);
+    var items = [];
+
+    if (openInvoices > 0) {
+      items.push({ tone: "danger", title: openInvoices + " offene Rechnungen", text: "Finanzen prüfen und Zahlungseingänge kontrollieren." });
+    }
+    if (openTasks > 0) {
+      items.push({ tone: "warning", title: openTasks + " offene Aufgaben", text: "Heute fällige Arbeit im Team prüfen." });
+    }
+    if (openTickets > 0) {
+      items.push({ tone: "warning", title: openTickets + " offene Tickets", text: "Service- und interne Tickets nach Priorität bearbeiten." });
+    }
+
+    var count = openInvoices + openTasks + openTickets;
+    setNotificationCount(count);
+    setTextAll("[data-shell-notification-summary]", count ? count + " offene Hinweise im System" : "Keine offenen Hinweise");
+
+    var list = document.querySelector("[data-shell-notification-list]");
+    if (!list) return;
+    if (!items.length) {
+      list.innerHTML = '<div class="notification-empty">Alles ruhig. Es gibt aktuell keine offenen Systemhinweise.</div>';
+      return;
+    }
+
+    list.innerHTML = items.map(function (item) {
+      return '<div class="notification-item ' + item.tone + '"><span>' + escapeHtml(item.title) + '</span><strong>' + escapeHtml(item.text) + '</strong></div>';
+    }).join("");
+  }
+
+  function setNotificationLoading() {
+    setNotificationCount(0);
+    setTextAll("[data-shell-notification-summary]", "Aktuelle Hinweise werden geladen.");
+  }
+
+  function setNotificationCount(count) {
+    document.querySelectorAll("[data-shell-notification-count]").forEach(function (badge) {
+      badge.hidden = count < 1;
+      badge.textContent = count > 99 ? "99+" : String(count);
+    });
+  }
+
+  function localNotificationSummary() {
+    var state = readLocalState();
+    if (!state) return null;
+    return {
+      finance: {
+        openInvoices: openItems(state.invoices, "Bezahlt")
+      },
+      workflow: {
+        openTasks: openItems(state.tasks, "Erledigt"),
+        openTickets: openItems(state.tickets, "Erledigt")
+      }
+    };
+  }
+
+  function readLocalState() {
+    try {
+      return JSON.parse(localStorage.getItem("autohaus-hessen-erp-v5") || "null");
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function openItems(items, doneStatus) {
+    if (!Array.isArray(items)) return 0;
+    return items.filter(function (item) {
+      return item && item.status !== doneStatus;
+    }).length;
+  }
+
   function setUser(name, roleLabel) {
     var hasName = typeof name === "string" && name.trim();
     var userName = hasName ? name.trim() : "";
@@ -133,6 +262,36 @@
     var first = parts[0].charAt(0);
     var second = parts.length > 1 ? parts[1].charAt(0) : parts[0].charAt(1);
     return (first + (second || "")).toUpperCase();
+  }
+
+  function apiUrl(path) {
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+      return "http://localhost:4004/api" + path;
+    }
+    return "/api" + path;
+  }
+
+  function numberOrZero(value) {
+    var number = Number(value);
+    return Number.isFinite(number) ? number : 0;
+  }
+
+  function setTextAll(selector, value) {
+    document.querySelectorAll(selector).forEach(function (element) {
+      element.textContent = value;
+    });
+  }
+
+  function escapeHtml(value) {
+    return String(value == null ? "" : value).replace(/[&<>"']/g, function (char) {
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char];
+    });
   }
 
   function supportText() {

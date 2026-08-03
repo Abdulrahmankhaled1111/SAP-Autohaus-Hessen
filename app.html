@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Autohaus HESSEN - Fiori App</title>
-  <link rel="manifest" href="manifest.webmanifest?v=20260624-shell-support">
+  <link rel="manifest" href="manifest.webmanifest?v=20260624-shell-indicators">
   <meta name="theme-color" content="#0f6ab4">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -12,8 +12,8 @@
   <meta name="apple-mobile-web-app-title" content="Autohaus HESSEN">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="assets/app.css?v=20260624-shell-support">
-  <link rel="stylesheet" href="assets/shell-tools.css?v=20260624-shell-support">
+  <link rel="stylesheet" href="assets/app.css?v=20260624-shell-indicators">
+  <link rel="stylesheet" href="assets/shell-tools.css?v=20260624-shell-indicators">
 </head>
 <body>
   <div class="app-shell">
@@ -60,6 +60,45 @@
           </label>
           <button class="btn" id="exportData">Daten exportieren</button>
           <button class="btn danger" id="resetDemo">Demo zurücksetzen</button>
+          <div class="shell-tool">
+            <button class="shell-state-button is-checking" id="systemStatus" type="button" data-shell-menu-button aria-label="System wird geprüft" aria-controls="shellSystemMenu" aria-expanded="false" title="System wird geprüft">
+              <span class="shell-state-icon" aria-hidden="true"></span>
+            </button>
+            <div class="shell-menu shell-system-menu" id="shellSystemMenu" role="dialog" aria-label="Systemstatus" hidden>
+              <div class="shell-menu-head">
+                <strong data-shell-system-title>System wird geprüft</strong>
+                <span data-shell-system-detail>API und Datenbank werden geprüft.</span>
+              </div>
+              <div class="system-status-grid">
+                <div><span>Frontend</span><strong>Fiori-App aktiv</strong></div>
+                <div><span>Backend</span><strong data-shell-api-state>Prüfung läuft</strong></div>
+                <div><span>Datenbank</span><strong data-shell-db-state>Prüfung läuft</strong></div>
+              </div>
+            </div>
+          </div>
+          <button class="session-button" id="sessionSecurity" type="button" aria-label="Sitzung verlängern" title="Sitzung verlängern">
+            <span class="session-fill" id="sessionProgress" aria-hidden="true"></span>
+            <span class="session-content">
+              <span class="session-lock" aria-hidden="true"></span>
+              <span class="session-label" id="sessionStateLabel">Sitzung</span>
+              <strong id="sessionCountdown">10:00</strong>
+            </span>
+          </button>
+          <div class="shell-tool">
+            <button class="shell-icon-button shell-notification-button" id="shellNotificationButton" type="button" data-shell-menu-button aria-label="Benachrichtigungen öffnen" aria-controls="shellNotificationMenu" aria-expanded="false" title="Benachrichtigungen">
+              <span class="shell-bell-icon" aria-hidden="true"></span>
+              <span class="shell-badge" data-shell-notification-count hidden>0</span>
+            </button>
+            <div class="shell-menu shell-notification-menu" id="shellNotificationMenu" role="dialog" aria-label="Benachrichtigungen" hidden>
+              <div class="shell-menu-head">
+                <strong>Benachrichtigungen</strong>
+                <span data-shell-notification-summary>Aktuelle Hinweise werden geladen.</span>
+              </div>
+              <div class="notification-list" data-shell-notification-list>
+                <div class="notification-empty">Noch keine Benachrichtigungen geladen.</div>
+              </div>
+            </div>
+          </div>
           <button class="shell-icon-button" type="button" data-shell-search aria-label="Suche öffnen" title="Suche">
             <span class="shell-search-icon" aria-hidden="true"></span>
           </button>
@@ -693,11 +732,11 @@
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div id="sideSheet" class="side-sheet-backdrop" hidden></div>
-  <script src="assets/development-mode.js?v=20260624-shell-support"></script>
-  <script src="assets/shell-tools.js?v=20260624-shell-support"></script>
-  <script src="assets/app.js?v=20260624-shell-support"></script>
-  <script src="assets/session.js?v=20260624-shell-support"></script>
-  <script src="assets/pwa.js?v=20260624-shell-support"></script>
+  <script src="assets/development-mode.js?v=20260624-shell-indicators"></script>
+  <script src="assets/shell-tools.js?v=20260624-shell-indicators"></script>
+  <script src="assets/app.js?v=20260624-shell-indicators"></script>
+  <script src="assets/session.js?v=20260624-shell-indicators"></script>
+  <script src="assets/pwa.js?v=20260624-shell-indicators"></script>
 </body>
 </html>
 

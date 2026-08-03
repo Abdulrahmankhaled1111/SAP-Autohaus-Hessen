@@ -1,4 +1,4 @@
-const CACHE_NAME = "autohaus-hessen-pwa-v20260624-shell-support";
+const CACHE_NAME = "autohaus-hessen-pwa-v20260624-shell-indicators";
 
 const STATIC_ASSETS = [
   "/",

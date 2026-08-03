@@ -50,6 +50,10 @@
   }
 
   function checkSystem() {
+    if (window.AUTOHAUS_SHELL && window.AUTOHAUS_SHELL.checkSystem) {
+      window.AUTOHAUS_SHELL.checkSystem();
+      return;
+    }
     fetch(apiUrl("/health"), { credentials: "include" })
       .then(function (response) { return response.ok ? response.json() : Promise.reject(new Error("System nicht erreichbar")); })
       .then(function (health) {
