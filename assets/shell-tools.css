@@ -92,43 +92,63 @@
 }
 
 .shell-state-button {
-  width: 28px;
-  height: 28px;
-  color: #c47f00;
+  --state-dot: #f2a100;
+  --state-dot-deep: #9f5f00;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+  color: var(--state-dot);
   background: transparent;
   border-color: transparent;
   box-shadow: none;
+  padding: 0;
 }
 
 .shell-state-button.is-good {
-  color: #137333;
+  --state-dot: #39c878;
+  --state-dot-deep: #137333;
+  color: var(--state-dot);
   background: transparent;
   box-shadow: none;
 }
 
 .shell-state-button.is-error {
-  color: #b42318;
+  --state-dot: #ef4e3f;
+  --state-dot-deep: #9f1d14;
+  color: var(--state-dot);
   background: transparent;
   box-shadow: none;
 }
 
 .topbar .shell-state-button {
-  color: #c47f00;
+  color: var(--state-dot);
   background: transparent;
   border-color: transparent;
   box-shadow: none;
 }
 
 .topbar .shell-state-button.is-good {
-  color: #137333;
+  color: var(--state-dot);
   background: transparent;
   border-color: transparent;
 }
 
 .topbar .shell-state-button.is-error {
-  color: #b42318;
+  color: var(--state-dot);
   background: transparent;
   border-color: transparent;
+}
+
+.shell-state-button:hover,
+.shell-state-button:focus,
+.shell-state-button[aria-expanded="true"],
+.topbar .shell-state-button:hover,
+.topbar .shell-state-button:focus,
+.topbar .shell-state-button[aria-expanded="true"] {
+  background: transparent;
+  border-color: transparent;
+  transform: none;
 }
 
 .topbar .shell-avatar {
@@ -148,11 +168,17 @@
 }
 
 .shell-state-icon {
-  width: 12px;
-  height: 12px;
+  width: 11px;
+  height: 11px;
   border-radius: 999px;
-  background: currentColor;
-  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.96) 0 13%, rgba(255, 255, 255, 0.45) 14% 26%, transparent 30%),
+    linear-gradient(180deg, var(--state-dot), var(--state-dot-deep));
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.55),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.18),
+    0 1px 1px rgba(16, 24, 40, 0.2);
 }
 
 .shell-state-icon::before,
